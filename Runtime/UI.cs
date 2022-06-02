@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Utils {
     public static class UI {
 
-        public static GameObject InstantiateUIPrefab(GameObject prefab, RectTransform parent, bool resetPosition = false) {
+        public static GameObject InstantiateUIPrefab(GameObject prefab, Transform parent, bool resetPosition = false) {
             GameObject tmp = InstantiateUIPrefab(prefab);
 
             tmp.transform.SetParent(parent);
