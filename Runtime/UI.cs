@@ -5,6 +5,10 @@ using UnityEngine;
 namespace Utils {
     public static class UI {
 
+        public static T InstantiateUIPrefab<T>(GameObject prefab, Transform parent, bool resetPosition = false) where T : Component{
+            return InstantiateUIPrefab(prefab, parent, resetPosition).GetComponent<T>();
+        }
+
         public static GameObject InstantiateUIPrefab(GameObject prefab, Transform parent, bool resetPosition = false) {
             GameObject tmp = InstantiateUIPrefab(prefab);
 
