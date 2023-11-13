@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Utils {
+namespace UnityUtils.Editor {
 
     public static class GizmosCustom {
 

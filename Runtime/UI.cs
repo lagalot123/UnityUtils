@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Utils {
+namespace UnityUtils.Runtime {
     public static class UI {
 
         public static T InstantiateUIPrefab<T>(GameObject prefab, Transform parent, bool resetPosition = false) where T : Component{
