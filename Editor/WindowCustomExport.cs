@@ -199,11 +199,11 @@ namespace UnityUtils.Editor {
 
 
             if (testBuild) {
-                filename = "Demolition2_" + Application.version + "_Test_00" + PlayerSettings.Android.bundleVersionCode;
+                filename = PlayerSettings.productName + "_" + Application.version + "_Test_00" + PlayerSettings.Android.bundleVersionCode;
             } else if (androidStore == AndroidStore.GooglePlay) {
-                filename = "Demolition2_" + Application.version + "_Play_0" + PlayerSettings.Android.bundleVersionCode + "_" + arch;
+                filename = PlayerSettings.productName + "_" + Application.version + "_Play_0" + PlayerSettings.Android.bundleVersionCode + "_" + arch;
             } else if (androidStore == AndroidStore.Amazon) {
-                filename = "Demolition2_" + Application.version + "_Amazon_00" + PlayerSettings.Android.bundleVersionCode + "_" + arch;
+                filename = PlayerSettings.productName + "_" + Application.version + "_Amazon_00" + PlayerSettings.Android.bundleVersionCode + "_" + arch;
             }
 
             filename += (aabExport ? ".aab" : ".apk");
