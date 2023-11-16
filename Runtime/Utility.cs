@@ -11,8 +11,24 @@ namespace UnityUtils.Runtime {
         Other
     }
 
-    public class Utility : MonoBehaviourSingleton<Utility>
+    public class Utility : MonoBehaviour
     {
+        private static Utility _I;
+        public static Utility I {
+            get {
+                if (_I == null) {
+                    _I = FindObjectOfType<Utility>();
+                    if (_I == null && Application.isPlaying) {
+                        GameObject tmp = (Instantiate(Resources.Load("Utility", typeof(GameObject)), Vector3.zero, Quaternion.identity) as GameObject);
+                        tmp.name = "Utility";
+                        _I = tmp.GetComponent<Utility>();
+                    }
+                    DontDestroyOnLoad(_I.gameObject);
+                }
+                return _I;
+            }
+        }
+
 
         public int versionCode;
         public bool testBuild;
