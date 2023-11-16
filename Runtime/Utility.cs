@@ -11,7 +11,7 @@ namespace UnityUtils.Runtime {
         Other
     }
 
-    public class Utility : MonoBehaviour
+    public class Utility : MonoBehaviourSingleton<Utility>
     {
 
         public int versionCode;
