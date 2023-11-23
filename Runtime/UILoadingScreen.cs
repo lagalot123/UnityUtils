@@ -7,14 +7,20 @@ namespace UnityUtils.Runtime {
     public class UILoadingScreen : MonoBehaviour {
         public Image imgLoadingBar;
 
+        private float f;
+
+        void Update() {
+            imgLoadingBar.fillAmount = Mathf.MoveTowards(imgLoadingBar.fillAmount, f, Time.unscaledDeltaTime * 5);
+        }
+
         public void SetProgress(float p) {
-            imgLoadingBar.fillAmount = Mathf.MoveTowards(imgLoadingBar.fillAmount, p + 0.1f, Time.deltaTime * 5);
+            f = p;
         }
 
         public void Toggle(bool b) {
             gameObject.SetActive(b);
             imgLoadingBar.fillAmount = 0;
+            f = 0;
         }
-
     }
 }

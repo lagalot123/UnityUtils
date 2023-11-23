@@ -76,7 +76,11 @@ namespace UnityUtils.Runtime {
         }
 
         IEnumerator WaitForAwakeStart() {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.8f);
+
+            loadingScreen.SetProgress(1);
+
+            yield return new WaitForSeconds(0.2f);
 
             loadingScreen.Toggle(false);
         }
