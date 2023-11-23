@@ -43,6 +43,7 @@ namespace UnityUtils.Runtime {
         }
 
         IEnumerator SceneLoad(string scene) {
+            Time.timeScale = 1;
             loadingScreen.Toggle(true);
 
             AsyncOperation operation = SceneManager.LoadSceneAsync(scene);

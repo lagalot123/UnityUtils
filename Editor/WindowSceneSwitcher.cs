@@ -15,6 +15,8 @@ namespace UnityUtils.Editor {
         static string[] scenesPaths;
         static bool[] isInBuildSettings;
         static string[] buttonLabels;
+
+        static bool filterByBuildScenes;
         /// <summary>
         /// Initialize window state.
         /// </summary>
@@ -25,6 +27,8 @@ namespace UnityUtils.Editor {
             // Utility window; Utility windows cannot be docked like the Scene and Game view windows.
             var window = (WindowSceneSwitcher)GetWindow(typeof(WindowSceneSwitcher), false, "Scene Switcher");
             window.position = new Rect(window.position.xMin + 100f, window.position.yMin + 100f, 200f, 400f);
+
+            filterByBuildScenes = EditorPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
         }
 
         void GetScenes() {
@@ -43,10 +47,11 @@ namespace UnityUtils.Editor {
                 for (int j = 0; j < EditorBuildSettings.scenes.Length; j++) {
                     if (scenesPaths[i] == EditorBuildSettings.scenes[j].path) {
                         isInBuildSettings[i] = true;
-
                     }
                 }
             }
+
+            filterByBuildScenes = EditorPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
         }
 
         /// <summary>
@@ -64,6 +69,18 @@ namespace UnityUtils.Editor {
             Color defaultColor = GUI.backgroundColor;
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Scenes:");
+
+
+
+            bool tmp = GUILayout.Toggle(filterByBuildScenes, "Scenes in Buid");
+
+            if (tmp != filterByBuildScenes) { 
+                EditorPrefs.SetBool("UnityUtils.SceneSwitcher.FilterByBuild", tmp);
+            }
+            filterByBuildScenes = tmp;
+
+
+
             if (GUILayout.Button("Refresh Scenes")) {
                 GetScenes();
             }
@@ -92,6 +109,9 @@ namespace UnityUtils.Editor {
                 for (int i = 0; i < scenesPaths.Length; i++) {
                     Scene scene = EditorSceneManager.GetSceneByPath(scenesPaths[i]);
                     if (scene != null) {
+                        if (filterByBuildScenes && !isInBuildSettings[i])
+                            continue;
+
                         if (scenesPaths[i] == EditorSceneManager.GetActiveScene().path) {
                             GUI.backgroundColor = Color.green;
                         } else if (isInBuildSettings[i]) {

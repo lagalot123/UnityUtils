@@ -44,5 +44,10 @@ namespace UnityUtils.Runtime {
             tabs[currentTab].SetActive(true);
         }
 
+        public void CycleTab(int i) {
+            SetTab(UnityUtils.Runtime.Misc.IndexLoop(currentTab, i, tabs.Length - 1));
+        }
+
+
     }
 }
