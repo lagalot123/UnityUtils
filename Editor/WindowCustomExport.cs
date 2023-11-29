@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityUtils.Runtime;
@@ -21,7 +22,7 @@ namespace UnityUtils.Editor {
         const string resourcesPhotonFusionRealtimeSettings = "PhotonAppSettings";
 
 
-        const string androidKeystorePassword = "";
+        static string androidKeystorePassword = "";
         //string productName = "Demolition Derby 2";
         //string applicationIdentifier = "com.BeerMoneyGames.Demolition2";
 
@@ -108,6 +109,10 @@ namespace UnityUtils.Editor {
 
             GUILayout.BeginHorizontal();
 
+
+            androidKeystorePassword = EditorGUILayout.TextField("Keystore Password", EditorPrefs.GetString("UnityUtils.CustomExport.KeystorePass", ""));
+            EditorPrefs.SetString("UnityUtils.CustomExport.KeystorePass", androidKeystorePassword);
+
             keepDebugSymbolsZip = GUILayout.Toggle(keepDebugSymbolsZip, "Generate Debug Symbols");
 
             GUILayout.EndHorizontal();
@@ -128,6 +133,26 @@ namespace UnityUtils.Editor {
             if (GUILayout.Button("Android All")) {
                 if (PreBuildSetup()) {
                     Build(AndroidArchitecture.All, true, AndroidStore.GooglePlay);
+                }
+            }
+            GUILayout.EndHorizontal();
+
+
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Amazon");
+            if (GUILayout.Button("Amazon APK")) {
+                if (PreBuildSetup()) {
+                    Build(AndroidArchitecture.All, false, AndroidStore.Amazon);
+                }
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Amazon");
+            if (GUILayout.Button("Amazon AAB")) {
+                if (PreBuildSetup()) {
+                    Build(AndroidArchitecture.All, true, AndroidStore.Amazon);
                 }
             }
             GUILayout.EndHorizontal();
@@ -179,12 +204,11 @@ namespace UnityUtils.Editor {
             //                UnityPurchasingEditor.TargetAndroidStore(AppStore.GooglePlay);
             //            }
             //#endif
-            Debug.Log("TODO target correct IAP store");
+            //Debug.Log("TODO target correct IAP store");
 
             EditorUserBuildSettings.buildAppBundle = aabExport;
 
             if (String.IsNullOrEmpty(PlayerSettings.Android.keystorePass) || String.IsNullOrEmpty(PlayerSettings.Android.keyaliasPass)) {
-                //Debug.LogError("Enter application signing passwords");
                 //return;
                 PlayerSettings.Android.keystorePass = androidKeystorePassword;
                 PlayerSettings.Android.keyaliasPass = androidKeystorePassword;
@@ -224,6 +248,13 @@ namespace UnityUtils.Editor {
             BuildPipeline.BuildPlayer(bo);
             Debug.Log("Exported APK " + androidStore + "/" + arch);
 
+
+            string burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filename + "_BurstDebugInformation_DoNotShip";
+            if (Directory.Exists(burstDebugInformationDirectoryPath)) {
+                Debug.Log($" > Deleting Burst debug information folder at path '{burstDebugInformationDirectoryPath}'...");
+
+                Directory.Delete(burstDebugInformationDirectoryPath, true);
+            }
 
             PlayerSettings.Android.bundleVersionCode = originalBundleCode;
             SetDebugBuildStatus(false);

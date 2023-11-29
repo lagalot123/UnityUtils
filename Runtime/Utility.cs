@@ -36,13 +36,15 @@ namespace UnityUtils.Runtime {
         public AndroidStore store;
 
         public UILoadingScreen loadingScreen;
-
+        
+        
+        public UnityEngine.Events.UnityEvent onLevelLoaded;
 
         public void LoadLevel(string scene) {
             StartCoroutine(SceneLoad(scene));
         }
 
-        IEnumerator SceneLoad(string scene) {
+        internal virtual IEnumerator SceneLoad(string scene) {
             Time.timeScale = 1;
             loadingScreen.Toggle(true);
 
@@ -66,13 +68,16 @@ namespace UnityUtils.Runtime {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        internal virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
             if (scene.buildIndex == 0 || scene.buildIndex == 1)
                 Screen.sleepTimeout = SleepTimeout.SystemSetting;
             else
                 Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
             StartCoroutine(WaitForAwakeStart());
+
+            if (onLevelLoaded != null)
+                onLevelLoaded.Invoke();
         }
 
         IEnumerator WaitForAwakeStart() {
