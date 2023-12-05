@@ -230,6 +230,7 @@ namespace UnityUtils.Editor {
                 filename = PlayerSettings.productName + "_" + Application.version + "_Amazon_00" + PlayerSettings.Android.bundleVersionCode + "_" + arch;
             }
 
+            string filenameNoExtension = filename;
             filename += (aabExport ? ".aab" : ".apk");
 
 
@@ -249,7 +250,7 @@ namespace UnityUtils.Editor {
             Debug.Log("Exported APK " + androidStore + "/" + arch);
 
 
-            string burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filename + "_BurstDebugInformation_DoNotShip";
+            string burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filenameNoExtension + "_BurstDebugInformation_DoNotShip";
             if (Directory.Exists(burstDebugInformationDirectoryPath)) {
                 Debug.Log($" > Deleting Burst debug information folder at path '{burstDebugInformationDirectoryPath}'...");
 

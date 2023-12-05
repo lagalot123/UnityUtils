@@ -9,8 +9,6 @@ namespace UnityUtils.Runtime {
         public GameObject go;
         public Text txtTitle;
 
-        public string linkRatingAndroidAmazon;
-
         public string linkRatingiOS;
 
         public string linkRatingFallback = "https://beermoneygames.com";
@@ -33,6 +31,7 @@ namespace UnityUtils.Runtime {
 
         private void Start() {
             txtTitle.text = "Enjoying " + Application.productName + "?";
+            go.SetActive(false);
         }
 
         public void Toggle() {
@@ -55,7 +54,7 @@ namespace UnityUtils.Runtime {
             if (Utility.I.store == AndroidStore.GooglePlay) {
                 Application.OpenURL("market://details?id=" + Application.identifier);
             } else if (Utility.I.store == AndroidStore.Amazon) {
-                Application.OpenURL(linkRatingAndroidAmazon);
+                Application.OpenURL("http://www.amazon.com/gp/mas/dl/android?p=" + Application.identifier);
             } else {
                 Application.OpenURL(linkRatingFallback);
             }
@@ -67,6 +66,7 @@ namespace UnityUtils.Runtime {
 
 
             PlayerPrefs.SetInt(playerPrefKey, 1);
+            go.SetActive(false);
         }
 
 
