@@ -9,8 +9,6 @@ namespace UnityUtils.Runtime {
         public GameObject go;
         public Text txtTitle;
 
-        public string linkRatingiOS;
-
         public string linkRatingFallback = "https://beermoneygames.com";
 
         public int minTriggers = 2;
@@ -59,7 +57,7 @@ namespace UnityUtils.Runtime {
                 Application.OpenURL(linkRatingFallback);
             }
 #elif UNITY_IOS
-			Application.OpenURL(linkRatingiOS);
+            Application.OpenURL("itms-apps://itunes.apple.com/app/" + Application.identifier);
 #else
             Application.OpenURL(linkRatingFallback);
 #endif
