@@ -113,49 +113,57 @@ namespace UnityUtils.Editor {
             androidKeystorePassword = EditorGUILayout.TextField("Keystore Password", EditorPrefs.GetString("UnityUtils.CustomExport.KeystorePass", ""));
             EditorPrefs.SetString("UnityUtils.CustomExport.KeystorePass", androidKeystorePassword);
 
+            GUILayout.EndHorizontal();
+            GUILayout.Space(20);
+
+            GUILayout.BeginHorizontal();
+
             keepDebugSymbolsZip = GUILayout.Toggle(keepDebugSymbolsZip, "Generate Debug Symbols");
+
+            PlayerSettings.Android.useAPKExpansionFiles = GUILayout.Toggle(PlayerSettings.Android.useAPKExpansionFiles, "Split Application Binary");
 
             GUILayout.EndHorizontal();
 
             GUILayout.Space(20);
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Play Store APK");
-            if (GUILayout.Button("Android All")) {
+
+            GUILayout.BeginVertical();
+
+            //GUILayout.Label("Play Store APK");
+            if (GUILayout.Button("PlayStore APK")) {
                 if (PreBuildSetup()) {
                     Build(AndroidArchitecture.All, false, AndroidStore.GooglePlay);
                 }
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Play Store AAB");
-            if (GUILayout.Button("Android All")) {
+            //GUILayout.Label("Play Store AAB");
+            if (GUILayout.Button("PlayStore AAB")) {
                 if (PreBuildSetup()) {
                     Build(AndroidArchitecture.All, true, AndroidStore.GooglePlay);
                 }
             }
-            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
 
-
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Amazon");
+            GUILayout.BeginVertical();
             if (GUILayout.Button("Amazon APK")) {
                 if (PreBuildSetup()) {
                     Build(AndroidArchitecture.All, false, AndroidStore.Amazon);
                 }
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Amazon");
             if (GUILayout.Button("Amazon AAB")) {
                 if (PreBuildSetup()) {
                     Build(AndroidArchitecture.All, true, AndroidStore.Amazon);
                 }
             }
+            GUILayout.EndVertical();
+
             GUILayout.EndHorizontal();
+
+
+
+           
 
 #endif
             GUILayout.EndVertical();
@@ -172,6 +180,10 @@ namespace UnityUtils.Editor {
 
             return true;
         }
+
+
+        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, bool testBuild, AndroidCreateSymbols createSymbolsZip);
+        public static event PreBuildEvent PreBuild;
 
         public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, bool testBuild = false, AndroidCreateSymbols createSymbolsZip = AndroidCreateSymbols.Disabled) {
             Debug.Log("Starting build");
@@ -194,6 +206,9 @@ namespace UnityUtils.Editor {
 
             string filename = "";
             int originalBundleCode = PlayerSettings.Android.bundleVersionCode;
+
+
+            PreBuild?.Invoke(arch, aabExport, androidStore, testBuild, createSymbolsZip);
 
             //#if UNITY_IOS
             //            UnityPurchasingEditor.TargetAndroidStore(AppStore.AppleAppStore);
