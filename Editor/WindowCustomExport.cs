@@ -162,20 +162,90 @@ namespace UnityUtils.Editor {
 
             GUILayout.EndHorizontal();
 
-
-
-
-
-#endif
-
+            
             GUILayout.Space(10);
 
             if (GUILayout.Button("Open Export Folder")) {
                 EditorUtility.RevealInFinder(Application.dataPath);
             }
 
+
+
+#endif
+
+#if UNITY_IOS
+            GUILayout.Space(20);
+            GUILayout.Label("XCode Project");
+            GUILayout.BeginHorizontal();
+
+
+            Path = EditorGUILayout.TextField("Location", Path);
+
+            if (GUILayout.Button("...", GUILayout.Width(50))) {
+                Path = EditorUtility.OpenFolderPanel("Select Directory", "", "");
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            Folder = EditorGUILayout.TextField("Folder Name", Folder);
+
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Export XCode Project")) {
+                if (PreBuildSetup()) {
+                    Build();
+                }
+            }            
+
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(20);
+
+            if (GUILayout.Button("Open Export Folder")) {
+                EditorUtility.RevealInFinder(Path);
+            }
+#endif
+
+
             GUILayout.EndVertical();
 
+        }
+
+        static string _path;
+        static string _folder;
+
+
+        static string Path {
+            get {
+                if (string.IsNullOrEmpty(_path)) {
+                    _path = EditorPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Path", "");
+                }
+                if (string.IsNullOrEmpty(_path)) {
+                    _path = Application.dataPath;
+                }
+                return _path;
+            }
+            set {
+                _path = value;
+                EditorPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Path", _path);
+            }
+        }
+
+        static string Folder {
+            get {
+                if (string.IsNullOrEmpty(_folder)) {
+                    _folder = EditorPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Folder", "");
+                }
+                if (string.IsNullOrEmpty(_folder)) {
+                    _folder = "XC_" + PlayerSettings.productName;
+                }
+                return _folder;
+            }
+            set {
+                _folder = value;
+                EditorPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Folder", _folder);
+            }
         }
 
         static bool PreBuildSetup() {
@@ -192,6 +262,45 @@ namespace UnityUtils.Editor {
 
         public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, bool testBuild, AndroidCreateSymbols createSymbolsZip);
         public static event PreBuildEvent PreBuild;
+
+
+        public void Build(bool testBuild = false) {
+            Debug.Log("Starting build");
+            SetDebugBuildStatus(testBuild);
+
+            string filename = Path;
+
+            string filenameNoExtension = filename;
+            //filename += (aabExport ? ".aab" : ".apk");
+
+
+            string[] levels = new string[UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings];
+            for (int i = 0; i < levels.Length; i++) {
+                levels[i] = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
+            }
+
+            BuildPlayerOptions bo = new BuildPlayerOptions {
+                scenes = levels,
+                locationPathName = Path + "/" + Folder,
+                target = BuildTarget.iOS,
+                options = testBuild ? (BuildOptions.None | BuildOptions.CompressWithLz4) : (BuildOptions.None | BuildOptions.CompressWithLz4HC)
+            };
+
+            BuildPipeline.BuildPlayer(bo);
+            Debug.Log("Exported Xcode Project");
+
+
+            //string burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filenameNoExtension + "_BurstDebugInformation_DoNotShip";
+            string burstDebugInformationDirectoryPath = Path + "/" + Folder + "_BurstDebugInformation_DoNotShip";
+            if (Directory.Exists(burstDebugInformationDirectoryPath)) {
+                Debug.Log($" > Deleting Burst debug information folder at path '{burstDebugInformationDirectoryPath}'...");
+
+                Directory.Delete(burstDebugInformationDirectoryPath, true);
+            }
+
+            SetDebugBuildStatus(false);
+        }
+
 
         public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, bool testBuild = false, AndroidCreateSymbols createSymbolsZip = AndroidCreateSymbols.Disabled) {
             Debug.Log("Starting build");
@@ -301,7 +410,7 @@ namespace UnityUtils.Editor {
 
             EditorUserBuildSettings.development = debug;
             PlayerSettings.productName = debug ? PlayerSettings.productName + " Test" : PlayerSettings.productName;
-            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, debug ? PlayerSettings.applicationIdentifier + "test" : PlayerSettings.applicationIdentifier);
+            PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, debug ? PlayerSettings.applicationIdentifier + "test" : PlayerSettings.applicationIdentifier);
         }
         private static int GetArchitectureCode(int originalBundleCode, AndroidArchitecture targetArchitectures, bool aab) {
             if (aab)
