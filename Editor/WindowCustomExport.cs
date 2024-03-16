@@ -39,7 +39,8 @@ namespace UnityUtils.Editor {
             GUILayout.Space(10);
 
             PlayerSettings.productName = EditorGUILayout.TextField("Product Name", PlayerSettings.productName);
-            PlayerSettings.applicationIdentifier = EditorGUILayout.TextField("Application Identifier", PlayerSettings.applicationIdentifier);
+            //PlayerSettings.applicationIdentifier = EditorGUILayout.TextField("Application Identifier", PlayerSettings.applicationIdentifier);
+            PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, EditorGUILayout.TextField("Application Identifier", PlayerSettings.applicationIdentifier));
 
             GUILayout.Space(20);
 
@@ -163,9 +164,16 @@ namespace UnityUtils.Editor {
 
 
 
-           
+
 
 #endif
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Open Export Folder")) {
+                EditorUtility.RevealInFinder(Application.dataPath);
+            }
+
             GUILayout.EndVertical();
 
         }

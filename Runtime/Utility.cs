@@ -40,6 +40,10 @@ namespace UnityUtils.Runtime {
         
         public UnityEngine.Events.UnityEvent onLevelLoaded;
 
+        public void ReloadCurrentLevel() {
+            LoadLevel(SceneManager.GetActiveScene().name);
+        }
+
         public void LoadLevel(string scene) {
             StartCoroutine(SceneLoad(scene));
         }

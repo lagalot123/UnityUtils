@@ -14,6 +14,9 @@ namespace UnityUtils.Runtime {
             return --start % max;
         }
 
+        /// <summary>
+        /// Max inclusive
+        /// </summary>
         public static int IndexLoop(int current, int change, int max) {
             int v = current + change;
             if (change > 0)
