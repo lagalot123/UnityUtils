@@ -11,8 +11,7 @@ namespace UnityUtils.Runtime {
         Other
     }
 
-    public class Utility : MonoBehaviour
-    {
+    public class Utility : MonoBehaviour {
         private static Utility _I;
         public static Utility I {
             get {
@@ -36,8 +35,8 @@ namespace UnityUtils.Runtime {
         public AndroidStore store;
 
         public UILoadingScreen loadingScreen;
-        
-        
+
+
         public UnityEngine.Events.UnityEvent onLevelLoaded;
 
         public void ReloadCurrentLevel() {
@@ -94,5 +93,18 @@ namespace UnityUtils.Runtime {
             loadingScreen.Toggle(false);
         }
 
+
+        public static void OpenStorePage() {
+#if UNITY_ANDROID
+            if (I.store == AndroidStore.GooglePlay) {
+                Application.OpenURL("market://details?id=" + Application.identifier);
+            } else if (I.store == AndroidStore.Amazon) {
+                Application.OpenURL("http://www.amazon.com/gp/mas/dl/android?p=" + Application.identifier);
+            }
+#elif UNITY_IOS
+            Application.OpenURL("itms-apps://itunes.apple.com/app/" + Application.identifier);
+#endif
+        }
     }
+
 }

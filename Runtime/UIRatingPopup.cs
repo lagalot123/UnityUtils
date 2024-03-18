@@ -9,8 +9,6 @@ namespace UnityUtils.Runtime {
         public GameObject go;
         public Text txtTitle;
 
-        public string linkRatingFallback = "https://beermoneygames.com";
-
         public int minTriggers = 2;
         private int triggers = 0;
         public bool onlyShowOnce = false;
@@ -24,7 +22,7 @@ namespace UnityUtils.Runtime {
             }
         }
 
-        const string playerPrefKey = "UnitUtils.RatingPopup.Seen";
+        const string playerPrefKey = "UnityUtils.RatingPopup.Seen";
 
 
         private void Start() {
@@ -48,20 +46,7 @@ namespace UnityUtils.Runtime {
         }
 
         public void Rate() {
-#if UNITY_ANDROID
-            if (Utility.I.store == AndroidStore.GooglePlay) {
-                Application.OpenURL("market://details?id=" + Application.identifier);
-            } else if (Utility.I.store == AndroidStore.Amazon) {
-                Application.OpenURL("http://www.amazon.com/gp/mas/dl/android?p=" + Application.identifier);
-            } else {
-                Application.OpenURL(linkRatingFallback);
-            }
-#elif UNITY_IOS
-            Application.OpenURL("itms-apps://itunes.apple.com/app/" + Application.identifier);
-#else
-            Application.OpenURL(linkRatingFallback);
-#endif
-
+            Utility.OpenStorePage();
 
             PlayerPrefs.SetInt(playerPrefKey, 1);
             go.SetActive(false);
