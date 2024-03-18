@@ -18,9 +18,10 @@ namespace UnityUtils.Runtime {
         public Text txtChangelog;
         public Text txtCurrentVersion;
 
-        private const string linkAndroidGooglePlayXML = "";
-        private const string linkAndroidAmazonXML = "";
-        private const string linkIosXML = "";
+
+        public string linkAndroidGooglePlayXML = "";
+        public string linkAndroidAmazonXML = "";
+        public string linkIosXML = "";
 
         public Button btnUpdateNotification;
 
@@ -55,32 +56,34 @@ namespace UnityUtils.Runtime {
 #else
         link = linkAndroidGooglePlayXML;
 #endif
+            if (!string.IsNullOrEmpty(link)) {
 
-            UnityWebRequest w = UnityWebRequest.Get(link);
+                UnityWebRequest w = UnityWebRequest.Get(link);
 
-            yield return w.SendWebRequest();
+                yield return w.SendWebRequest();
 
-            if (w.error != null) {
-                Debug.Log("Update Notification Error: " + w.error);
-            } else {
-                try {
-                    XmlDocument xmlDoc = new();
-                    xmlDoc.LoadXml(w.downloadHandler.text);
+                if (w.error != null) {
+                    Debug.Log("Update Notification Error: " + w.error);
+                } else {
+                    try {
+                        XmlDocument xmlDoc = new();
+                        xmlDoc.LoadXml(w.downloadHandler.text);
 
-                    XmlNodeList nodes = xmlDoc.GetElementsByTagName("U");
+                        XmlNodeList nodes = xmlDoc.GetElementsByTagName("U");
 
-                    foreach (XmlNode node in nodes) {
-                        UpdateNotes u = new UpdateNotes {
-                            versionString = node.SelectSingleNode("S").InnerText,
-                            versionCode = System.Int32.Parse(node.SelectSingleNode("V").InnerText),
-                            changelog = node.SelectSingleNode("N").InnerText
-                        };
+                        foreach (XmlNode node in nodes) {
+                            UpdateNotes u = new UpdateNotes {
+                                versionString = node.SelectSingleNode("S").InnerText,
+                                versionCode = System.Int32.Parse(node.SelectSingleNode("V").InnerText),
+                                changelog = node.SelectSingleNode("N").InnerText
+                            };
 
-                        updateNotes.Add(u);
-                    }
-                } catch { }
+                            updateNotes.Add(u);
+                        }
+                    } catch { }
 
-                ReloadUI(updateNotes);
+                    ReloadUI(updateNotes);
+                }
             }
 
         }
