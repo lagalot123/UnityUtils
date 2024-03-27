@@ -28,7 +28,7 @@ namespace UnityUtils.Editor {
             var window = (WindowSceneSwitcher)GetWindow(typeof(WindowSceneSwitcher), false, "Scene Switcher");
             window.position = new Rect(window.position.xMin + 100f, window.position.yMin + 100f, 200f, 400f);
 
-            filterByBuildScenes = EditorPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
+            filterByBuildScenes = ProjectPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
         }
 
         void GetScenes() {
@@ -51,7 +51,7 @@ namespace UnityUtils.Editor {
                 }
             }
 
-            filterByBuildScenes = EditorPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
+            filterByBuildScenes = ProjectPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace UnityUtils.Editor {
 
             bool tmp = GUILayout.Toggle(filterByBuildScenes, "Scenes in Buid");
 
-            if (tmp != filterByBuildScenes) { 
-                EditorPrefs.SetBool("UnityUtils.SceneSwitcher.FilterByBuild", tmp);
+            if (tmp != filterByBuildScenes) {
+                ProjectPrefs.SetBool("UnityUtils.SceneSwitcher.FilterByBuild", tmp);
             }
             filterByBuildScenes = tmp;
 

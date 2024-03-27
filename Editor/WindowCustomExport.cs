@@ -5,6 +5,9 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityUtils.Runtime;
+#if FUSION_WEAVER
+using Fusion.Photon.Realtime;
+#endif
 
 namespace UnityUtils.Editor {
     public class WindowCustomExport : EditorWindow {
@@ -65,6 +68,8 @@ namespace UnityUtils.Editor {
 
                 if (uCurrentBVC != g.GetComponent<Utility>().versionCode) {
                     EditorUtility.SetDirty(g);
+                    AssetDatabase.Refresh();
+                    AssetDatabase.SaveAssets();
                     Debug.Log("Changed UVC from " + uCurrentBVC + " to " + g.GetComponent<Utility>().versionCode);
                 }
             } else {
@@ -98,7 +103,7 @@ namespace UnityUtils.Editor {
             GUILayout.EndHorizontal();         
 
 
-            if (sCurrentBVC != s.AppSettings.AppVersion || uCurrentBVC != g.GetComponent(typeUtils).versionCode) {
+            if (sCurrentBVC != s.AppSettings.AppVersion) {
                 AssetDatabase.Refresh();
                 AssetDatabase.SaveAssets();
             }   
@@ -111,8 +116,8 @@ namespace UnityUtils.Editor {
             GUILayout.BeginHorizontal();
 
 
-            androidKeystorePassword = EditorGUILayout.TextField("Keystore Password", EditorPrefs.GetString("UnityUtils.CustomExport.KeystorePass", ""));
-            EditorPrefs.SetString("UnityUtils.CustomExport.KeystorePass", androidKeystorePassword);
+            androidKeystorePassword = EditorGUILayout.TextField("Keystore Password", ProjectPrefs.GetString("UnityUtils.CustomExport.KeystorePass", ""));
+            ProjectPrefs.SetString("UnityUtils.CustomExport.KeystorePass", androidKeystorePassword);
 
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -162,7 +167,7 @@ namespace UnityUtils.Editor {
 
             GUILayout.EndHorizontal();
 
-            
+
             GUILayout.Space(10);
 
             if (GUILayout.Button("Open Export Folder")) {
@@ -219,7 +224,7 @@ namespace UnityUtils.Editor {
         static string Path {
             get {
                 if (string.IsNullOrEmpty(_path)) {
-                    _path = EditorPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Path", "");
+                    _path = ProjectPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Path", "");
                 }
                 if (string.IsNullOrEmpty(_path)) {
                     _path = Application.dataPath;
@@ -228,14 +233,14 @@ namespace UnityUtils.Editor {
             }
             set {
                 _path = value;
-                EditorPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Path", _path);
+                ProjectPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Path", _path);
             }
         }
 
         static string Folder {
             get {
                 if (string.IsNullOrEmpty(_folder)) {
-                    _folder = EditorPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Folder", "");
+                    _folder = ProjectPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Folder", "");
                 }
                 if (string.IsNullOrEmpty(_folder)) {
                     _folder = "XC_" + PlayerSettings.productName;
@@ -244,7 +249,7 @@ namespace UnityUtils.Editor {
             }
             set {
                 _folder = value;
-                EditorPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Folder", _folder);
+                ProjectPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Folder", _folder);
             }
         }
 
@@ -397,7 +402,7 @@ namespace UnityUtils.Editor {
 
         static void SetDebugBuildStatus(bool debug) {
 
-            if(Resources.Load(resourcesUtilsPrefabPath) != null) {
+            if (Resources.Load(resourcesUtilsPrefabPath) != null) {
                 GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetInstanceID())));
 
                 if (g.GetComponent<Utility>().testBuild != debug) {
