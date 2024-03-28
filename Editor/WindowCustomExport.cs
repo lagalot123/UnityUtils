@@ -167,6 +167,13 @@ namespace UnityUtils.Editor {
 
             GUILayout.EndHorizontal();
 
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Test APK")) {
+                if (PreBuildSetup()) {
+                    Build(AndroidArchitecture.All, false, AndroidStore.GooglePlay, true);
+                }
+            }
 
             GUILayout.Space(10);
 
