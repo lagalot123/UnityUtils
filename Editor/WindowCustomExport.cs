@@ -421,9 +421,22 @@ namespace UnityUtils.Editor {
             }
 
             EditorUserBuildSettings.development = debug;
-            PlayerSettings.productName = debug ? PlayerSettings.productName + " Test" : PlayerSettings.productName;
-            PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, debug ? PlayerSettings.applicationIdentifier + "test" : PlayerSettings.applicationIdentifier);
+
+            string name = PlayerSettings.productName;
+
+            if (debug && name.Length >= 5 && name.Substring(name.Length - 5, 5) != " Test")
+                PlayerSettings.productName = PlayerSettings.productName + " Test";
+            else if (!debug && name.Length >= 5 && name.Substring(name.Length - 5, 5) == " Test")
+                PlayerSettings.productName = name.Substring(0, name.Length - 5);
+
+            string ident = PlayerSettings.applicationIdentifier;
+
+            if (debug && ident.Length >= 4 && ident.Substring(ident.Length - 4, 4) != "test")
+                PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, ident + "test");
+            else if (!debug && ident.Length >= 4 && ident.Substring(ident.Length - 4, 4) == "test")
+                PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, ident.Substring(0, ident.Length - 4));
         }
+
         private static int GetArchitectureCode(int originalBundleCode, AndroidArchitecture targetArchitectures, bool aab) {
             if (aab)
                 return 600000 + originalBundleCode;
