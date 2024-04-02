@@ -17,7 +17,7 @@ namespace UnityUtils.Runtime {
             return InstantiateUIPrefab(prefab, prefab.transform.parent);
         }
         public static GameObject InstantiateUIPrefab(GameObject prefab, Transform parent, bool resetPosition = false) {
-            GameObject tmp = InstantiateUIPrefab(prefab);
+            GameObject tmp = Instantiate(prefab);
 
             tmp.SetActive(true);
             Debug.Log(tmp.activeSelf);
@@ -33,5 +33,8 @@ namespace UnityUtils.Runtime {
             return tmp;
         }
 
+        static GameObject Instantiate(GameObject prefab) {
+            return Object.Instantiate(prefab);
+        }
     }
 }
