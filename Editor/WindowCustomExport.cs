@@ -171,7 +171,15 @@ namespace UnityUtils.Editor {
 
             if (GUILayout.Button("Test APK")) {
                 if (PreBuildSetup()) {
-                    Build(AndroidArchitecture.All, false, AndroidStore.GooglePlay, true);
+                    Build(AndroidArchitecture.All, false, AndroidStore.GooglePlay, BuildType.Tester);
+                }
+            }
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Debug APK")) {
+                if (PreBuildSetup()) {
+                    Build(AndroidArchitecture.All, false, AndroidStore.GooglePlay, BuildType.Debug);
                 }
             }
 
@@ -272,13 +280,18 @@ namespace UnityUtils.Editor {
         }
 
 
-        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, bool testBuild, AndroidCreateSymbols createSymbolsZip);
+        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, AndroidCreateSymbols createSymbolsZip);
         public static event PreBuildEvent PreBuild;
 
+        public enum BuildType {
+            Release = 0,
+            Tester = 1,
+            Debug = 2
+        }
 
-        public void Build(bool testBuild = false) {
+        public void Build(BuildType buildType = BuildType.Release) {
             Debug.Log("Starting build");
-            SetDebugBuildStatus(testBuild);
+            SetDebugBuildStatus(buildType);
 
             string filename = Path;
 
@@ -295,7 +308,7 @@ namespace UnityUtils.Editor {
                 scenes = levels,
                 locationPathName = Path + "/" + Folder,
                 target = BuildTarget.iOS,
-                options = testBuild ? (BuildOptions.None | BuildOptions.CompressWithLz4) : (BuildOptions.None | BuildOptions.CompressWithLz4HC)
+                options = GetBuildOptions(buildType),
             };
 
             BuildPipeline.BuildPlayer(bo);
@@ -310,15 +323,26 @@ namespace UnityUtils.Editor {
                 Directory.Delete(burstDebugInformationDirectoryPath, true);
             }
 
-            SetDebugBuildStatus(false);
+            SetDebugBuildStatus(buildType);
         }
 
 
-        public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, bool testBuild = false, AndroidCreateSymbols createSymbolsZip = AndroidCreateSymbols.Disabled) {
+        static BuildOptions GetBuildOptions(BuildType type) {
+            BuildOptions tmp = (type != BuildType.Release) ? (BuildOptions.None | BuildOptions.CompressWithLz4) : (BuildOptions.None | BuildOptions.CompressWithLz4HC);
+
+            if (type == BuildType.Debug) {
+                tmp = tmp | BuildOptions.Development | BuildOptions.ConnectWithProfiler;
+            }
+
+            return tmp;
+        }
+
+
+        public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType = BuildType.Release, AndroidCreateSymbols createSymbolsZip = AndroidCreateSymbols.Disabled) {
             Debug.Log("Starting build");
             EditorUserBuildSettings.androidCreateSymbols = createSymbolsZip;
 
-            SetDebugBuildStatus(testBuild);
+            SetDebugBuildStatus(buildType);
 
             if (Resources.Load(resourcesUtilsPrefabPath) != null) {
                 GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetInstanceID())));
@@ -337,7 +361,7 @@ namespace UnityUtils.Editor {
             int originalBundleCode = PlayerSettings.Android.bundleVersionCode;
 
 
-            PreBuild?.Invoke(arch, aabExport, androidStore, testBuild, createSymbolsZip);
+            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, createSymbolsZip);
 
             //#if UNITY_IOS
             //            UnityPurchasingEditor.TargetAndroidStore(AppStore.AppleAppStore);
@@ -366,7 +390,7 @@ namespace UnityUtils.Editor {
             PlayerSettings.Android.bundleVersionCode = GetArchitectureCode(originalBundleCode, PlayerSettings.Android.targetArchitectures, aabExport);
 
 
-            if (testBuild) {
+            if (buildType != BuildType.Release) {
                 filename = PlayerSettings.productName + "_" + Application.version + "_Test_00" + PlayerSettings.Android.bundleVersionCode;
             } else if (androidStore == AndroidStore.GooglePlay) {
                 filename = PlayerSettings.productName + "_" + Application.version + "_Play_0" + PlayerSettings.Android.bundleVersionCode + "_" + arch;
@@ -387,7 +411,7 @@ namespace UnityUtils.Editor {
                 scenes = levels,
                 locationPathName = filename,
                 target = BuildTarget.Android,
-                options = testBuild ? (BuildOptions.None | BuildOptions.CompressWithLz4) : (BuildOptions.None | BuildOptions.CompressWithLz4HC)
+                options = GetBuildOptions(buildType),
             };
 
             BuildPipeline.BuildPlayer(bo);
@@ -402,15 +426,17 @@ namespace UnityUtils.Editor {
             }
 
             PlayerSettings.Android.bundleVersionCode = originalBundleCode;
-            SetDebugBuildStatus(false);
+            SetDebugBuildStatus(BuildType.Release);
         }
 
 
 
-        static void SetDebugBuildStatus(bool debug) {
+        static void SetDebugBuildStatus(BuildType type) {
+            bool debug = type != BuildType.Release;
 
             if (Resources.Load(resourcesUtilsPrefabPath) != null) {
                 GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetInstanceID())));
+
 
                 if (g.GetComponent<Utility>().testBuild != debug) {
                     g.GetComponent<Utility>().testBuild = debug;
