@@ -12,6 +12,8 @@ namespace UnityUtils.Runtime {
         public static GameObject InstantiateUIPrefab(GameObject prefab, Transform parent, bool resetPosition = false) {
             GameObject tmp = InstantiateUIPrefab(prefab);
 
+            tmp.SetActive(true);
+
             tmp.transform.SetParent(parent);
             tmp.transform.localScale = prefab.transform.localScale;
 

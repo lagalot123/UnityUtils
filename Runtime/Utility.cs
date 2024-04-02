@@ -47,7 +47,7 @@ namespace UnityUtils.Runtime {
             StartCoroutine(SceneLoad(scene));
         }
 
-        virtual internal IEnumerator SceneLoad(string scene) {
+        virtual public IEnumerator SceneLoad(string scene) {
             Time.timeScale = 1;
             loadingScreen.Toggle(true);
 
@@ -63,15 +63,15 @@ namespace UnityUtils.Runtime {
             }
         }
 
-        virtual internal void OnEnable() {
+        virtual public void OnEnable() {
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        virtual internal void OnDisable() {
+        virtual public void OnDisable() {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
-        virtual internal void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        virtual public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
             if (scene.buildIndex == 0 || scene.buildIndex == 1)
                 Screen.sleepTimeout = SleepTimeout.SystemSetting;
             else
@@ -83,7 +83,7 @@ namespace UnityUtils.Runtime {
                 onLevelLoaded.Invoke();
         }
 
-        virtual internal IEnumerator WaitForAwakeStart() {
+        virtual public IEnumerator WaitForAwakeStart() {
             yield return new WaitForSeconds(0.8f);
 
             loadingScreen.SetProgress(1);
