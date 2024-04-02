@@ -20,7 +20,6 @@ namespace UnityUtils.Runtime {
             GameObject tmp = Instantiate(prefab);
 
             tmp.SetActive(true);
-            Debug.Log(tmp.activeSelf);
 
             tmp.transform.SetParent(parent);
             tmp.transform.localScale = prefab.transform.localScale;
