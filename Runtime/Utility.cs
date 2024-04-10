@@ -37,7 +37,9 @@ namespace UnityUtils.Runtime {
         public UILoadingScreen loadingScreen;
 
 
+        public UnityEngine.Events.UnityEvent onLevelLoadingStarted;
         public UnityEngine.Events.UnityEvent onLevelLoaded;
+        public UnityEngine.Events.UnityEvent onLevelLoadedAfterWaitForAwakeStart;
 
         virtual public void ReloadCurrentLevel() {
             LoadLevel(SceneManager.GetActiveScene().name);
@@ -53,6 +55,10 @@ namespace UnityUtils.Runtime {
 
             AsyncOperation operation = SceneManager.LoadSceneAsync(scene);
             operation.allowSceneActivation = false;
+
+            if (onLevelLoadingStarted != null)
+                onLevelLoadingStarted.Invoke();
+
             while (!operation.isDone) {
                 loadingScreen.SetProgress(operation.progress);
 
@@ -91,6 +97,10 @@ namespace UnityUtils.Runtime {
             yield return new WaitForSeconds(0.2f);
 
             loadingScreen.Toggle(false);
+
+
+            if (onLevelLoadedAfterWaitForAwakeStart != null)
+                onLevelLoadedAfterWaitForAwakeStart.Invoke();
         }
 
 

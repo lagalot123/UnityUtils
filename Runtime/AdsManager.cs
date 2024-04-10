@@ -56,17 +56,17 @@ namespace UnityUtils.Runtime {
             if (!setup || !adTypes.HasFlag(Ads.Interstitial))
                 return;
 
-            if (noInterstitialScenes.Contains(SceneManager.GetActiveScene().name)) {
-
-            } else if (loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials) {
+            if (!noInterstitialScenes.Contains(SceneManager.GetActiveScene().name)) {
+                loadCount--;
+            }
+            
+            if (loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials) {
                 if (IsInterstitialAdReady()) {
                     lastAd = Time.realtimeSinceStartup;
                     loadCount = Random.Range(sceneLoadsBeforeAdMinMax.x, sceneLoadsBeforeAdMinMax.y);
 
                     ShowInterstitialAd();
                 }
-            } else {
-                loadCount--;
             }
         }
 
