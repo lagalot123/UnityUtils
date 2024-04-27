@@ -35,5 +35,17 @@ namespace UnityUtils.Runtime {
             return new Rect(corners[0].x, corners[0].y, corners[2].x - corners[0].x, corners[1].y - corners[0].y);
         }
 
+        static Vector3[] cor = new Vector3[4];
+
+        public static void GetScreenRectFromRectTransformNonAlloc(RectTransform rT, ref Rect r) {
+
+            rT.GetWorldCorners(cor);
+
+            r.x = cor[0].x;
+            r.y = cor[0].y;
+
+            r.width = cor[2].x - cor[0].x;
+            r.height = cor[1].y - cor[0].y;
+        }
     }
 }

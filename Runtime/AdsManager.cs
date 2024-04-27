@@ -82,6 +82,10 @@ namespace UnityUtils.Runtime {
                 ads.ShowInterstitialAd();
         }
 
+        public void IncreaseLoadCount(int c) {
+            loadCount -= c;
+        }
+
         public bool IsRewardedAdReady() {
             if (!adTypes.HasFlag(Ads.Rewarded))
                 return false;

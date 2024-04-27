@@ -63,14 +63,10 @@ namespace UnityUtils.Editor {
 
                 return;
             }
-            EditorGUILayout.BeginVertical();
-            this.scrollPos = EditorGUILayout.BeginScrollView(this.scrollPos, false, false);
 
             Color defaultColor = GUI.backgroundColor;
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Scenes:");
-
-
 
             bool tmp = GUILayout.Toggle(filterByBuildScenes, "Scenes in Buid");
 
@@ -86,6 +82,8 @@ namespace UnityUtils.Editor {
             }
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.BeginVertical();
+            this.scrollPos = EditorGUILayout.BeginScrollView(this.scrollPos, false, false);
 
             //GUILayout.Label("Scenes In Build", EditorStyles.boldLabel);
             //for (var i = 0; i < EditorBuildSettings.scenes.Length; i++) {

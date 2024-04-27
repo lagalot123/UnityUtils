@@ -17,9 +17,9 @@ namespace UnityUtils.Runtime {
     public class AdsAppodeal : AdsImplementation, IAppodealInitializationListener, IRewardedVideoAdListener, IInterstitialAdListener {
 
 #if UNITY_IOS
-        string appodealId = "";
+        public string appodealId = "";
 #else
-        string appodealId = "";
+        public string appodealId = "";
 #endif
 
         private AdsManager.Ads adTypes;
