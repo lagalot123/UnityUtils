@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 #if APPODEAL
-using AppodealAds.Unity.Api;
-using AppodealAds.Unity.Common;
+
+using AppodealStack.Monetization.Api;
+using AppodealStack.Monetization.Common;
+
 #endif
 
 
@@ -30,100 +32,100 @@ namespace UnityUtils.Runtime {
             int adTypes = 0;
 
             if (ads.HasFlag(AdsManager.Ads.Interstitial)) {
-                adTypes |= Appodeal.INTERSTITIAL;
+                adTypes |= AppodealShowStyle.Interstitial;
             }
 
             if (ads.HasFlag(AdsManager.Ads.Rewarded)) {
-                adTypes |= Appodeal.REWARDED_VIDEO;
+                adTypes |= AppodealShowStyle.RewardedVideo;
             }
 
 
-            Appodeal.setLogLevel(Appodeal.LogLevel.None);
-            Appodeal.setTesting(false);
+            Appodeal.SetLogLevel(AppodealLogLevel.None);
+            Appodeal.SetTesting(false);
 
-            Appodeal.disableLocationPermissionCheck();
-            Appodeal.setChildDirectedTreatment(false);
-            Appodeal.muteVideosIfCallsMuted(true);
+            Appodeal.SetLocationTracking(false);
+            Appodeal.SetChildDirectedTreatment(false);
+            Appodeal.MuteVideosIfCallsMuted(true);
 
-            Appodeal.setInterstitialCallbacks(this);
-            Appodeal.setRewardedVideoCallbacks(this);
+            Appodeal.SetInterstitialCallbacks(this);
+            Appodeal.SetRewardedVideoCallbacks(this);
 
-            Appodeal.cache(Appodeal.INTERSTITIAL);
-            Appodeal.cache(Appodeal.REWARDED_VIDEO);
+            Appodeal.Cache(AppodealShowStyle.Interstitial);
+            Appodeal.Cache(AppodealShowStyle.RewardedVideo);
 
-            Appodeal.initialize(appodealId, adTypes, (IAppodealInitializationListener)this);
+            Appodeal.Initialize(appodealId, adTypes, (IAppodealInitializationListener)this);
         }
 
         public override bool IsInterstitialAdReady() {
-            return Appodeal.isLoaded(Appodeal.INTERSTITIAL);
+            return Appodeal.IsLoaded(AppodealShowStyle.Interstitial);
         }
 
         public override bool IsRewardedAdReady() {
-            return Appodeal.isLoaded(Appodeal.REWARDED_VIDEO);
+            return Appodeal.IsLoaded(AppodealShowStyle.RewardedVideo);
         }
 
-        public void onInitializationFinished(List<string> errors) {
+        public void OnInitializationFinished(List<string> errors) {
             //Debug.Log("onInitializationFinished " + (errors != null ? errors.Count + "" : "none"));
         }
-        public void onInterstitialClicked() {
+        public void OnInterstitialClicked() {
 
         }
 
-        public void onInterstitialClosed() {
+        public void OnInterstitialClosed() {
 #if UNITY_IOS
                 //Debug.Log("closed interstitial");
                 Time.timeScale = 1; //TODO test if necessary
 #endif
         }
-        public void onInterstitialExpired() {
+        public void OnInterstitialExpired() {
             //Debug.Log("onInterstitialExpired");
         }
 
-        public void onInterstitialFailedToLoad() {
+        public void OnInterstitialFailedToLoad() {
             //Debug.Log("onInterstitialFailedToLoad");
         }
 
-        public void onInterstitialLoaded(bool isPrecache) {
+        public void OnInterstitialLoaded(bool isPrecache) {
             //Debug.Log("onInterstitialLoaded");
         }
 
-        public void onInterstitialShowFailed() {
+        public void OnInterstitialShowFailed() {
             //Debug.Log("onInterstitialShowFailed");
         }
 
-        public void onInterstitialShown() {
+        public void OnInterstitialShown() {
             //Debug.Log("onInterstitialShown");
         }
 
-        public void onRewardedVideoClicked() {
+        public void OnRewardedVideoClicked() {
 
         }
 
-        public void onRewardedVideoClosed(bool finished) {
+        public void OnRewardedVideoClosed(bool finished) {
 
         }
 
-        public void onRewardedVideoExpired() {
+        public void OnRewardedVideoExpired() {
 
         }
 
-        public void onRewardedVideoFailedToLoad() {
+        public void OnRewardedVideoFailedToLoad() {
 
         }
 
-        public void onRewardedVideoFinished(double amount, string name) {
+        public void OnRewardedVideoFinished(double amount, string name) {
             RewardedVideoAdRewardedEvent();
         }
 
-        public void onRewardedVideoLoaded(bool precache) {
+        public void OnRewardedVideoLoaded(bool precache) {
 
         }
 
-        public void onRewardedVideoShowFailed() {
+        public void OnRewardedVideoShowFailed() {
 
         }
 
-        public void onRewardedVideoShown() {
+        public void OnRewardedVideoShown() {
 
         }
 
@@ -133,13 +135,13 @@ namespace UnityUtils.Runtime {
             //Debug.Log("showing interstitial");
             Time.timeScale = 0; //TODO test if necessary
 #endif
-                Appodeal.show(Appodeal.INTERSTITIAL);
+                Appodeal.Show(AppodealShowStyle.Interstitial);
             }
         }
 
         public override void ShowRewardedAd() {
             if (IsRewardedAdReady())
-                Appodeal.show(Appodeal.REWARDED_VIDEO);
+                Appodeal.Show(AppodealShowStyle.RewardedVideo);
         }
 
         void RewardedVideoAdRewardedEvent() {
