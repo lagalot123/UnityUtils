@@ -115,6 +115,15 @@ namespace UnityUtils.Runtime {
             Application.OpenURL("itms-apps://itunes.apple.com/app/" + Application.identifier);
 #endif
         }
+
+        public static bool IsGenuine {
+            get {
+                return
+                    !Application.genuineCheckAvailable
+                    || (Application.genuineCheckAvailable && Application.genuine)
+                    || I.testBuild;
+            } 
+        }
     }
 
 }
