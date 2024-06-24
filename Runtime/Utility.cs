@@ -103,8 +103,14 @@ namespace UnityUtils.Runtime {
                 onLevelLoadedAfterWaitForAwakeStart.Invoke();
         }
 
+        public static string overrideStoreLink;
 
         public static void OpenStorePage() {
+            if (!string.IsNullOrEmpty(overrideStoreLink)) {
+                Application.OpenURL(overrideStoreLink);
+                return;
+            }
+
 #if UNITY_ANDROID
             if (I.store == AndroidStore.GooglePlay) {
                 Application.OpenURL("market://details?id=" + Application.identifier);
