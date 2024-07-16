@@ -417,8 +417,16 @@ namespace UnityUtils.Editor {
             BuildPipeline.BuildPlayer(bo);
             Debug.Log("Exported APK " + androidStore + "/" + arch);
 
-
+            //old burst debug information folder export path
             string burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filenameNoExtension + "_BurstDebugInformation_DoNotShip";
+            if (Directory.Exists(burstDebugInformationDirectoryPath)) {
+                Debug.Log($" > Deleting Burst debug information folder at path '{burstDebugInformationDirectoryPath}'...");
+
+                Directory.Delete(burstDebugInformationDirectoryPath, true);
+            }
+
+            //new burst debug information folder export path
+            burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + Application.productName + "_BurstDebugInformation_DoNotShip";
             if (Directory.Exists(burstDebugInformationDirectoryPath)) {
                 Debug.Log($" > Deleting Burst debug information folder at path '{burstDebugInformationDirectoryPath}'...");
 
