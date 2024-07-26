@@ -19,11 +19,10 @@ namespace UnityUtils.Editor {
 
         GUIStyle centerLabelStyle;
 
-        private bool keepDebugSymbolsZip = false;
-
         const string resourcesUtilsPrefabPath = "Utility";
         const string resourcesPhotonFusionRealtimeSettings = "PhotonAppSettings";
 
+        const string KEY_ENABLEDEEPPROFILING = "Export_EnableDeepProfilingSUpport";
 
         static string androidKeystorePassword = "";
         //string productName = "Demolition Derby 2";
@@ -122,11 +121,19 @@ namespace UnityUtils.Editor {
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
 
+           
+            GUILayout.BeginHorizontal();
+            PlayerSettings.Android.useAPKExpansionFiles = GUILayout.Toggle(PlayerSettings.Android.useAPKExpansionFiles, "Split Application Binary");
+
+            EditorPrefs.SetBool(KEY_ENABLEDEEPPROFILING, GUILayout.Toggle(EditorPrefs.GetBool(KEY_ENABLEDEEPPROFILING, false), KEY_ENABLEDEEPPROFILING));
+
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(10);
+
             GUILayout.BeginHorizontal();
 
-            keepDebugSymbolsZip = GUILayout.Toggle(keepDebugSymbolsZip, "Generate Debug Symbols");
-
-            PlayerSettings.Android.useAPKExpansionFiles = GUILayout.Toggle(PlayerSettings.Android.useAPKExpansionFiles, "Split Application Binary");
+            EditorUserBuildSettings.androidCreateSymbols = (AndroidCreateSymbols)EditorGUILayout.EnumPopup("Symbols: ", EditorUserBuildSettings.androidCreateSymbols);
 
             GUILayout.EndHorizontal();
 
@@ -328,19 +335,22 @@ namespace UnityUtils.Editor {
 
 
         static BuildOptions GetBuildOptions(BuildType type) {
-            BuildOptions tmp = (type != BuildType.Release) ? (BuildOptions.None | BuildOptions.CompressWithLz4) : (BuildOptions.None | BuildOptions.CompressWithLz4HC);
+            BuildOptions tmp = BuildOptions.None | ((type != BuildType.Release) ? BuildOptions.CompressWithLz4 : BuildOptions.CompressWithLz4HC);
 
             if (type == BuildType.Debug) {
                 tmp = tmp | BuildOptions.Development | BuildOptions.ConnectWithProfiler;
             }
 
+            if (type == BuildType.Release)
+                tmp |= BuildOptions.CleanBuildCache;
+
             return tmp;
         }
 
 
-        public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType = BuildType.Release, AndroidCreateSymbols createSymbolsZip = AndroidCreateSymbols.Disabled) {
+        public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType = BuildType.Release) {
             Debug.Log("Starting build");
-            EditorUserBuildSettings.androidCreateSymbols = createSymbolsZip;
+            EditorUserBuildSettings.androidCreateSymbols = EditorPrefs.GetBool("", false) ? AndroidCreateSymbols.Debugging : AndroidCreateSymbols.Disabled;
 
             SetDebugBuildStatus(buildType);
 
@@ -361,7 +371,7 @@ namespace UnityUtils.Editor {
             int originalBundleCode = PlayerSettings.Android.bundleVersionCode;
 
 
-            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, createSymbolsZip);
+            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
 
             //#if UNITY_IOS
             //            UnityPurchasingEditor.TargetAndroidStore(AppStore.AppleAppStore);
