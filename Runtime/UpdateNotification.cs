@@ -24,6 +24,7 @@ namespace UnityUtils.Runtime {
         public string linkIosXML = "";
 
         public Button btnUpdateNotification;
+        public Text txtUpdateCount;
 
         static List<UpdateNotes> updateNotes;
 
@@ -91,17 +92,21 @@ namespace UnityUtils.Runtime {
 
         void ReloadUI(List<UpdateNotes> n) {
             string cl = "";
+            int updateCount = 0;
 
             for (int i = n.Count - 1; i >= 0; i--) {
                 if (n[i].versionCode > Utility.I.versionCode) {
                     cl += "*" + n[i].versionString;
                     cl += "\n" + n[i].changelog + "\n";
+                    updateCount++;
                 }
             }
 
             txtChangelog.text = cl;
 
             btnUpdateNotification.gameObject.SetActive(cl.Length > 1);
+
+            if (txtUpdateCount != null) txtUpdateCount.text = updateCount + "";
         }
 
         public void LinkUpdate() {
