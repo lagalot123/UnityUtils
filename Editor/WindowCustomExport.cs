@@ -350,7 +350,6 @@ namespace UnityUtils.Editor {
 
         public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType = BuildType.Release) {
             Debug.Log("Starting build");
-            EditorUserBuildSettings.androidCreateSymbols = EditorPrefs.GetBool("", false) ? AndroidCreateSymbols.Debugging : AndroidCreateSymbols.Disabled;
 
             SetDebugBuildStatus(buildType);
 
