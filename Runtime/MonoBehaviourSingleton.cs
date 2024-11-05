@@ -11,7 +11,7 @@ namespace UnityUtils.Runtime {
         public static T I {
             get {
                 if (_I == null) {
-                    _I = FindObjectOfType(typeof(T)) as T;
+                    _I = FindAnyObjectByType(typeof(T)) as T;
                 }
                 return _I;
             }

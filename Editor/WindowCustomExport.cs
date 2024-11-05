@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+#if UNITY_6000_0_OR_NEWER
+using UnityEditor.Build;
+using UnityEditor.Build.Content;
+#endif
 using UnityEngine;
 using UnityUtils.Runtime;
 #if FUSION_WEAVER
@@ -42,7 +46,12 @@ namespace UnityUtils.Editor {
 
             PlayerSettings.productName = EditorGUILayout.TextField("Product Name", PlayerSettings.productName);
             //PlayerSettings.applicationIdentifier = EditorGUILayout.TextField("Application Identifier", PlayerSettings.applicationIdentifier);
+
+#if UNITY_6000_0_OR_NEWER
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup), EditorGUILayout.TextField("Application Identifier", PlayerSettings.applicationIdentifier));
+#else
             PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, EditorGUILayout.TextField("Application Identifier", PlayerSettings.applicationIdentifier));
+#endif
 
             GUILayout.Space(20);
 
@@ -123,7 +132,12 @@ namespace UnityUtils.Editor {
 
            
             GUILayout.BeginHorizontal();
+#if UNITY_6000_0_OR_NEWER
+            //PlayerSettings.Android.useAPKExpansionFiles = GUILayout.Toggle(PlayerSettings.Android.useAPKExpansionFiles, "Split Application Binary");
+            PlayerSettings.Android.splitApplicationBinary = GUILayout.Toggle(PlayerSettings.Android.splitApplicationBinary, "Split Application Binary");
+#else
             PlayerSettings.Android.useAPKExpansionFiles = GUILayout.Toggle(PlayerSettings.Android.useAPKExpansionFiles, "Split Application Binary");
+#endif
 
             EditorPrefs.SetBool(KEY_ENABLEDEEPPROFILING, GUILayout.Toggle(EditorPrefs.GetBool(KEY_ENABLEDEEPPROFILING, false), KEY_ENABLEDEEPPROFILING));
 
@@ -133,7 +147,11 @@ namespace UnityUtils.Editor {
 
             GUILayout.BeginHorizontal();
 
+#if UNITY_6000_0_OR_NEWER
             EditorUserBuildSettings.androidCreateSymbols = (AndroidCreateSymbols)EditorGUILayout.EnumPopup("Symbols: ", EditorUserBuildSettings.androidCreateSymbols);
+#else
+            EditorUserBuildSettings.androidCreateSymbols = (AndroidCreateSymbols)EditorGUILayout.EnumPopup("Symbols: ", EditorUserBuildSettings.androidCreateSymbols);
+#endif
 
             GUILayout.EndHorizontal();
 
@@ -370,7 +388,12 @@ namespace UnityUtils.Editor {
             int originalBundleCode = PlayerSettings.Android.bundleVersionCode;
 
 
+#if UNITY_6000_0_OR_NEWER
             PreBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+#else
+            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+#endif
+
 
             //#if UNITY_IOS
             //            UnityPurchasingEditor.TargetAndroidStore(AppStore.AppleAppStore);
@@ -393,7 +416,15 @@ namespace UnityUtils.Editor {
 
             PlayerSettings.Android.targetArchitectures = arch;
             PlayerSettings.Android.buildApkPerCpuArchitecture = false;
+
+
+#if UNITY_6000_0_OR_NEWER
+            //PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetScriptingBackend(NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup.Android), ScriptingImplementation.IL2CPP);
+#else
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+#endif
+
 
 
             PlayerSettings.Android.bundleVersionCode = GetArchitectureCode(originalBundleCode, PlayerSettings.Android.targetArchitectures, aabExport);
@@ -474,10 +505,17 @@ namespace UnityUtils.Editor {
 
             string ident = PlayerSettings.applicationIdentifier;
 
+#if UNITY_6000_0_OR_NEWER
+            if (debug && (ident.Length < 4 || (ident.Length >= 4 && ident.Substring(ident.Length - 4, 4) != "test")))
+                PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup), ident + "test");
+            else if (!debug && ident.Length >= 4 && ident.Substring(ident.Length - 4, 4) == "test")
+                PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup), ident[0..^4]);
+#else
             if (debug && (ident.Length < 4 || (ident.Length >= 4 && ident.Substring(ident.Length - 4, 4) != "test")))
                 PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, ident + "test");
             else if (!debug && ident.Length >= 4 && ident.Substring(ident.Length - 4, 4) == "test")
                 PlayerSettings.SetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup, ident[0..^4]);
+#endif
         }
 
         private static int GetArchitectureCode(int originalBundleCode, AndroidArchitecture targetArchitectures, bool aab) {

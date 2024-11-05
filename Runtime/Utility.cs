@@ -16,7 +16,7 @@ namespace UnityUtils.Runtime {
         public static Utility I {
             get {
                 if (_I == null) {
-                    _I = FindObjectOfType<Utility>();
+                    _I = FindAnyObjectByType<Utility>();
                     if (_I == null && Application.isPlaying) {
                         GameObject tmp = (Instantiate(Resources.Load("Utility", typeof(GameObject)), Vector3.zero, Quaternion.identity) as GameObject);
                         tmp.name = "Utility";
