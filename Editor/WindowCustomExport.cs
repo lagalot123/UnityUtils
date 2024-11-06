@@ -311,6 +311,9 @@ namespace UnityUtils.Editor {
         public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, AndroidCreateSymbols createSymbolsZip);
         public static event PreBuildEvent PreBuild;
 
+        public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, AndroidCreateSymbols createSymbolsZip);
+        public static event PostBuildEvent PostBuild;
+
         public enum BuildType {
             Release = 0,
             Tester = 1,
@@ -491,6 +494,13 @@ namespace UnityUtils.Editor {
 
             PlayerSettings.Android.bundleVersionCode = originalBundleCode;
             SetDebugBuildStatus(BuildType.Release);
+
+
+#if UNITY_6000_0_OR_NEWER
+            PostBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+#else
+            PostBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+#endif
         }
 
 
