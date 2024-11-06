@@ -26,7 +26,8 @@ namespace UnityUtils.Editor {
         const string resourcesUtilsPrefabPath = "Utility";
         const string resourcesPhotonFusionRealtimeSettings = "PhotonAppSettings";
 
-        const string KEY_ENABLEDEEPPROFILING = "Export_EnableDeepProfilingSUpport";
+        const string KEY_ENABLEDEEPPROFILING = "Export_EnableDeepProfilingSupport";
+        const string KEY_DELETEIL2CPPOUTPUT = "Export_DeleteIl2cppOutput";
 
         static string androidKeystorePassword = "";
         //string productName = "Demolition Derby 2";
@@ -139,7 +140,9 @@ namespace UnityUtils.Editor {
             PlayerSettings.Android.useAPKExpansionFiles = GUILayout.Toggle(PlayerSettings.Android.useAPKExpansionFiles, "Split Application Binary");
 #endif
 
-            EditorPrefs.SetBool(KEY_ENABLEDEEPPROFILING, GUILayout.Toggle(EditorPrefs.GetBool(KEY_ENABLEDEEPPROFILING, false), KEY_ENABLEDEEPPROFILING));
+            ProjectPrefs.SetBool(KEY_ENABLEDEEPPROFILING, GUILayout.Toggle(ProjectPrefs.GetBool(KEY_ENABLEDEEPPROFILING, false), KEY_ENABLEDEEPPROFILING));
+
+            ProjectPrefs.SetBool(KEY_DELETEIL2CPPOUTPUT, GUILayout.Toggle(ProjectPrefs.GetBool(KEY_DELETEIL2CPPOUTPUT, false), KEY_DELETEIL2CPPOUTPUT));
 
             GUILayout.EndHorizontal();
 
@@ -357,6 +360,9 @@ namespace UnityUtils.Editor {
 
             if (type == BuildType.Debug) {
                 tmp = tmp | BuildOptions.Development | BuildOptions.ConnectWithProfiler;
+
+                if (ProjectPrefs.GetBool(KEY_ENABLEDEEPPROFILING, false))
+                    tmp |= BuildOptions.EnableDeepProfilingSupport;
             }
 
             if (type == BuildType.Release)
@@ -457,6 +463,16 @@ namespace UnityUtils.Editor {
             BuildPipeline.BuildPlayer(bo);
             Debug.Log("Exported APK " + androidStore + "/" + arch);
 
+
+            //il2cpp
+            if(ProjectPrefs.GetBool(KEY_DELETEIL2CPPOUTPUT, true)) {
+                string il2cppDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filenameNoExtension + "_BackUpThisFolder_ButDontShipItWithYourGame";
+                if (Directory.Exists(il2cppDebugInformationDirectoryPath))
+                {
+                    Debug.Log($" > Deleting il2cppOutput information folder at path '{il2cppDebugInformationDirectoryPath}'...");
+                    Directory.Delete(il2cppDebugInformationDirectoryPath, true);
+                }
+            }
             //old burst debug information folder export path
             string burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filenameNoExtension + "_BurstDebugInformation_DoNotShip";
             if (Directory.Exists(burstDebugInformationDirectoryPath)) {
