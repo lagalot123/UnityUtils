@@ -17,17 +17,25 @@ namespace UnityUtils.Runtime {
             get {
                 if (_I == null) {
                     _I = FindAnyObjectByType<Utility>();
-                    if (_I == null && Application.isPlaying) {
-                        GameObject tmp = (Instantiate(Resources.Load("Utility", typeof(GameObject)), Vector3.zero, Quaternion.identity) as GameObject);
-                        tmp.name = "Utility";
-                        _I = tmp.GetComponent<Utility>();
-                    }
-                    DontDestroyOnLoad(_I.gameObject);
                 }
                 return _I;
             }
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void OnBeforeSceneLoad(){
+#if UNITY_EDITOR
+            if (Resources.Load("Utility", typeof(GameObject)) == null)
+                Debug.LogError("No Utility prefab found at Resources/Utility.prefab");
+#endif
+
+            GameObject tmp = (Instantiate(Resources.Load("Utility", typeof(GameObject)), Vector3.zero, Quaternion.identity) as GameObject);
+            tmp.name = "Utility";
+            _I = tmp.GetComponent<Utility>();
+            DontDestroyOnLoad(_I.gameObject);
+
+            _I.OnInit();
+        }
 
         public int versionCode;
         public bool testBuild;
@@ -40,6 +48,10 @@ namespace UnityUtils.Runtime {
         public UnityEngine.Events.UnityEvent onLevelLoadingStarted;
         public UnityEngine.Events.UnityEvent onLevelLoaded;
         public UnityEngine.Events.UnityEvent onLevelLoadedAfterWaitForAwakeStart;
+
+        virtual public void OnInit() { 
+        
+        }
 
         virtual public void ReloadCurrentLevel() {
             LoadLevel(SceneManager.GetActiveScene().name);
