@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[assembly: UnityEngine.Scripting.AlwaysLinkAssembly]
+
 namespace UnityUtils.Runtime {
 
     public enum AndroidStore {

@@ -2,7 +2,8 @@
     "name": "wasd.UnityUtils.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:cc59714135607a04ab8904e332f59969"
+        "GUID:cc59714135607a04ab8904e332f59969",
+        "GUID:139b8e18b99210a4b8eebce1b114e64a"
     ],
     "includePlatforms": [
         "Editor"
