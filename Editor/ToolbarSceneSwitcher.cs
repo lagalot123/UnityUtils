@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using UnityToolbarExtender;
+using UnityEngine.Rendering;
 
 namespace UnityUtils.Editor
 {
@@ -83,14 +84,14 @@ namespace UnityUtils.Editor
                 return;
             }
 
-            if (scenePaths == null || scenePaths.Length <= 1)
-                return;
+            //if (scenePaths == null || scenePaths.Length <= 1)
+            //    return;
 
             index = -1;
 
             for (int i = 0; i < scenePaths.Length; i++)
             {
-                if (EditorSceneManager.GetActiveScene().path != scenePaths[index])
+                if (EditorSceneManager.GetActiveScene().path == scenePaths[i])
                 {
                     index = i;
                     break;
@@ -99,11 +100,13 @@ namespace UnityUtils.Editor
 
             index = EditorGUILayout.Popup(index, buttonLabels, GUILayout.Width(200));
 
-            if (EditorSceneManager.GetActiveScene().path != scenePaths[index])
-            {
-                if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            if(index >= 0 && index < scenePaths.Length) { 
+                if (EditorSceneManager.GetActiveScene().path != scenePaths[index])
                 {
-                    EditorSceneManager.OpenScene(scenePaths[index]);
+                    if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                    {
+                        EditorSceneManager.OpenScene(scenePaths[index]);
+                    }
                 }
             }
 
