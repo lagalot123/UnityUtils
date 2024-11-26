@@ -32,13 +32,12 @@ namespace UnityUtils.Editor
             ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
         }
         static string[] scenePaths;
-        static string[] buttonLabels;
+        static GUIContent[] buttonLabels;
 
         static void GetScenes()
         {
             bool filterByBuildScenes = ProjectPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
             string[] scenePathsAll = AssetDatabase.FindAssets("t:Scene", new string[] { "Assets/" }).Select(AssetDatabase.GUIDToAssetPath).ToArray();
-            buttonLabels = new string[scenePathsAll.Length];
 
             List<int> tmp = new();
 
@@ -61,14 +60,12 @@ namespace UnityUtils.Editor
             }
 
             scenePaths = new string[tmp.Count];
-            buttonLabels = new string[tmp.Count];
+            buttonLabels = new GUIContent[tmp.Count];
 
             for (int i = 0; i < scenePaths.Length; i++)
             {
                 scenePaths[i] = scenePathsAll[tmp[i]];
-
-                buttonLabels[i] = scenePathsAll[tmp[i]].Remove(0, 7);
-                buttonLabels[i] = buttonLabels[i].Remove(buttonLabels[i].Length - 6, 6);
+                buttonLabels[i] = new GUIContent(scenePathsAll[tmp[i]][7..^6].Replace('/', '_'));
             }
 
         }
@@ -84,8 +81,8 @@ namespace UnityUtils.Editor
                 return;
             }
 
-            //if (scenePaths == null || scenePaths.Length <= 1)
-            //    return;
+            if (scenePaths == null)
+                return;
 
             index = -1;
 
