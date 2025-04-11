@@ -29,6 +29,8 @@ namespace UnityUtils.Editor {
         const string KEY_ENABLEDEEPPROFILING = "Export_EnableDeepProfilingSupport";
         const string KEY_DELETEIL2CPPOUTPUT = "Export_DeleteIl2cppOutput";
 
+        const string KEY_AUTORUNPLAYER = "Export_AutoRunPlayer";
+
         static string androidKeystorePassword = "";
         //string productName = "Demolition Derby 2";
         //string applicationIdentifier = "com.BeerMoneyGames.Demolition2";
@@ -143,6 +145,8 @@ namespace UnityUtils.Editor {
             ProjectPrefs.SetBool(KEY_ENABLEDEEPPROFILING, GUILayout.Toggle(ProjectPrefs.GetBool(KEY_ENABLEDEEPPROFILING, false), KEY_ENABLEDEEPPROFILING));
 
             ProjectPrefs.SetBool(KEY_DELETEIL2CPPOUTPUT, GUILayout.Toggle(ProjectPrefs.GetBool(KEY_DELETEIL2CPPOUTPUT, false), KEY_DELETEIL2CPPOUTPUT));
+
+            ProjectPrefs.SetBool(KEY_AUTORUNPLAYER, GUILayout.Toggle(ProjectPrefs.GetBool(KEY_AUTORUNPLAYER, false), KEY_AUTORUNPLAYER));
 
             GUILayout.EndHorizontal();
 
@@ -370,6 +374,9 @@ namespace UnityUtils.Editor {
 
             if (type == BuildType.Release)
                 tmp |= BuildOptions.CleanBuildCache;
+
+            if(ProjectPrefs.GetBool(KEY_AUTORUNPLAYER, false))
+                tmp |= BuildOptions.AutoRunPlayer;
 
             return tmp;
         }
