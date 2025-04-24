@@ -34,7 +34,7 @@ namespace UnityUtils.Runtime {
             Init();
         }
 
-        private void Init() {
+        virtual public void Init() {
             if (setup)
                 return;
 
@@ -52,12 +52,14 @@ namespace UnityUtils.Runtime {
             setup = true;
         }
 
-        public void OnLevelLoaded() {
+        virtual public void OnLevelLoaded() {
             if (!setup || !adTypes.HasFlag(Ads.Interstitial))
                 return;
 
             if (!noInterstitialScenes.Contains(SceneManager.GetActiveScene().name)) {
                 loadCount--;
+            } else {
+                return;
             }
             
             if (loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials) {

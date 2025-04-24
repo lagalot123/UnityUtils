@@ -155,7 +155,9 @@ namespace UnityUtils.Editor {
             GUILayout.BeginHorizontal();
 
 #if UNITY_6000_0_OR_NEWER
-            EditorUserBuildSettings.androidCreateSymbols = (AndroidCreateSymbols)EditorGUILayout.EnumPopup("Symbols: ", EditorUserBuildSettings.androidCreateSymbols);
+            //EditorUserBuildSettings.androidCreateSymbols = (AndroidCreateSymbols)EditorGUILayout.EnumPopup("Symbols: ", EditorUserBuildSettings.androidCreateSymbols);
+            //EditorUserBuildSettings.androidCreateSymbols = (AndroidCreateSymbols)EditorGUILayout.EnumPopup("Symbols: ", EditorUserBuildSettings.androidCreateSymbols);
+            UnityEditor.Android.UserBuildSettings.DebugSymbols.level = (Unity.Android.Types.DebugSymbolLevel)EditorGUILayout.EnumPopup("Symbols: ", UnityEditor.Android.UserBuildSettings.DebugSymbols.level);
 #else
             EditorUserBuildSettings.androidCreateSymbols = (AndroidCreateSymbols)EditorGUILayout.EnumPopup("Symbols: ", EditorUserBuildSettings.androidCreateSymbols);
 #endif
@@ -312,11 +314,20 @@ namespace UnityUtils.Editor {
         }
 
 
+#if UNITY_6000_0_OR_NEWER
+        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, Unity.Android.Types.DebugSymbolLevel createSymbolsZip);
+        public static event PreBuildEvent PreBuild;
+
+        public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, Unity.Android.Types.DebugSymbolLevel createSymbolsZip);
+        public static event PostBuildEvent PostBuild;
+#else
         public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, AndroidCreateSymbols createSymbolsZip);
         public static event PreBuildEvent PreBuild;
 
         public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, AndroidCreateSymbols createSymbolsZip);
         public static event PostBuildEvent PostBuild;
+#endif
+
 
         public enum BuildType {
             Release = 0,
@@ -405,7 +416,7 @@ namespace UnityUtils.Editor {
 
 
 #if UNITY_6000_0_OR_NEWER
-            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, UnityEditor.Android.UserBuildSettings.DebugSymbols.level);
 #else
             PreBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
 #endif
@@ -504,7 +515,7 @@ namespace UnityUtils.Editor {
 
 
 #if UNITY_6000_0_OR_NEWER
-            PostBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+            PostBuild?.Invoke(arch, aabExport, androidStore, buildType, UnityEditor.Android.UserBuildSettings.DebugSymbols.level);
 #else
             PostBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
 #endif
