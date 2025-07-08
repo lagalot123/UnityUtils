@@ -10,7 +10,8 @@ namespace UnityUtils.Runtime {
         private float f;
 
         void Update() {
-            imgLoadingBar.fillAmount = Mathf.MoveTowards(imgLoadingBar.fillAmount, f, Time.unscaledDeltaTime * 5);
+            if(f > imgLoadingBar.fillAmount)
+                imgLoadingBar.fillAmount = Mathf.MoveTowards(imgLoadingBar.fillAmount, f, Time.unscaledDeltaTime * 5);
         }
 
         public void SetProgress(float p) {
