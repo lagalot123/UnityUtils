@@ -97,7 +97,8 @@ namespace UnityUtils.Runtime {
             else
                 Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
-            StartCoroutine(WaitForAwakeStart());
+            if (scene.buildIndex != 0)
+                StartCoroutine(WaitForAwakeStart());
 
             if (onLevelLoaded != null)
                 onLevelLoaded.Invoke();
