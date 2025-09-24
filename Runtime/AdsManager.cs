@@ -1,5 +1,6 @@
 #if UNITYUTILS_ADS
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace UnityUtils.Runtime {
                 return;
 
             //sceneLoadsBeforeAd = 0;
-            loadCount = Random.Range(sceneLoadsBeforeAdMinMax.x, sceneLoadsBeforeAdMinMax.y);
+            loadCount = UnityEngine.Random.Range(sceneLoadsBeforeAdMinMax.x, sceneLoadsBeforeAdMinMax.y);
             lastAd = -30;
 
 #if UNITY_EDITOR
@@ -65,7 +66,7 @@ namespace UnityUtils.Runtime {
             if (loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials) {
                 if (IsInterstitialAdReady()) {
                     lastAd = Time.realtimeSinceStartup;
-                    loadCount = Random.Range(sceneLoadsBeforeAdMinMax.x, sceneLoadsBeforeAdMinMax.y);
+                    loadCount = UnityEngine.Random.Range(sceneLoadsBeforeAdMinMax.x, sceneLoadsBeforeAdMinMax.y);
 
                     ShowInterstitialAd();
                 }
@@ -95,10 +96,20 @@ namespace UnityUtils.Runtime {
             return ads.IsRewardedAdReady();
         }
 
-        public void ShowRewardedAd() {
+        public void OnRewardedAdFinished() {
+            if (onRewardedAdFinished != null) {
+                onRewardedAdFinished();
+            }
+        }
+
+        public void ShowRewardedAd(Action callback) {
+            onRewardedAdFinished = callback;
+
             if (IsRewardedAdReady())
                 ads.ShowRewardedAd();
         }
+
+        public Action onRewardedAdFinished;
     }
 }
 

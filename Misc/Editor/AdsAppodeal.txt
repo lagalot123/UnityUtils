@@ -25,11 +25,11 @@
 //            int adTypes = 0;
 
 //            if (ads.HasFlag(AdsManager.Ads.Interstitial)) {
-//                adTypes |= AppodealShowStyle.Interstitial;
+//                adTypes |= AppodealAdType.Interstitial;
 //            }
 
 //            if (ads.HasFlag(AdsManager.Ads.Rewarded)) {
-//                adTypes |= AppodealShowStyle.RewardedVideo;
+//                adTypes |= AppodealAdType.RewardedVideo;
 //            }
 
 
@@ -43,18 +43,18 @@
 //            Appodeal.SetInterstitialCallbacks(this);
 //            Appodeal.SetRewardedVideoCallbacks(this);
 
-//            Appodeal.Cache(AppodealShowStyle.Interstitial);
-//            Appodeal.Cache(AppodealShowStyle.RewardedVideo);
+//			  Appodeal.SetAutoCache(AppodealAdType.Interstitial, true);
+//			  Appodeal.SetAutoCache(AppodealAdType.RewardedVideo, true);
 
 //            Appodeal.Initialize(appodealId, adTypes, (IAppodealInitializationListener)this);
 //        }
 
 //        public override bool IsInterstitialAdReady() {
-//            return Appodeal.IsLoaded(AppodealShowStyle.Interstitial);
+//            return Appodeal.IsLoaded(AppodealAdType.Interstitial);
 //        }
 
 //        public override bool IsRewardedAdReady() {
-//            return Appodeal.IsLoaded(AppodealShowStyle.RewardedVideo);
+//            return Appodeal.IsLoaded(AppodealAdType.RewardedVideo);
 //        }
 
 //        public void OnInitializationFinished(List<string> errors) {
