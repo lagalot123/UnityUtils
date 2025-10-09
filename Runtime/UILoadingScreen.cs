@@ -7,6 +7,8 @@ namespace UnityUtils.Runtime {
     public class UILoadingScreen : MonoBehaviour {
         public Image imgLoadingBar;
 
+        public GameObject[] enableOnLoad;
+
         private float f;
 
         void Update() {
@@ -22,6 +24,10 @@ namespace UnityUtils.Runtime {
             gameObject.SetActive(b);
             imgLoadingBar.fillAmount = 0;
             f = 0;
+
+            for (int i = 0; i < enableOnLoad.Length; i++) {
+                enableOnLoad[i].SetActive(b);
+            }
         }
     }
 }
