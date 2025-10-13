@@ -63,7 +63,7 @@ namespace UnityUtils.Runtime {
                 return;
             }
             
-            if (loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials) {
+            if (ShowInterstitialAfterSceneLoad()) {
                 if (IsInterstitialAdReady()) {
                     lastAd = Time.realtimeSinceStartup;
                     loadCount = UnityEngine.Random.Range(sceneLoadsBeforeAdMinMax.x, sceneLoadsBeforeAdMinMax.y);
@@ -71,6 +71,10 @@ namespace UnityUtils.Runtime {
                     ShowInterstitialAd();
                 }
             }
+        }
+
+        virtual public bool ShowInterstitialAfterSceneLoad() {
+            return loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials;
         }
 
         bool IsInterstitialAdReady() {
