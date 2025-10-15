@@ -24,6 +24,8 @@ namespace UnityUtils.Runtime {
             }
         }
 
+#if UNITY_UTILS_AUTO_INIT_UTILITY_PREFAB
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnBeforeSceneLoad(){
 #if UNITY_EDITOR
@@ -38,6 +40,7 @@ namespace UnityUtils.Runtime {
 
             _I.OnInit();
         }
+#endif
 
         public int versionCode;
         public bool testBuild;
