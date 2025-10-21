@@ -9,12 +9,12 @@ using UnityEngine.SceneManagement;
 namespace UnityUtils.Runtime {
     public class AdsManager : MonoBehaviour {
 
-        //private int sceneLoadsBeforeAd = 2;
         public Vector2Int sceneLoadsBeforeAdMinMax = Vector2Int.one;
-        private int loadCount = 0;
+        protected int loadCount = 0;
 
         public float minSecondsBetweenInterstitials = 60;
-        private float lastAd = 30;
+        public float maxSecondsBetweenInterstitials = 120;
+        protected float lastAd = 30;
 
         public AdsImplementation ads;
         public List<string> noInterstitialScenes = new();
@@ -57,7 +57,7 @@ namespace UnityUtils.Runtime {
             if (!setup || !adTypes.HasFlag(Ads.Interstitial))
                 return;
 
-            if (!noInterstitialScenes.Contains(SceneManager.GetActiveScene().name)) {
+            if (ShouldSceneLoadTriggerAd()) {
                 loadCount--;
             } else {
                 return;
@@ -73,8 +73,12 @@ namespace UnityUtils.Runtime {
             }
         }
 
+        virtual public bool ShouldSceneLoadTriggerAd() {
+            return !noInterstitialScenes.Contains(SceneManager.GetActiveScene().name);
+        }
+
         virtual public bool ShowInterstitialAfterSceneLoad() {
-            return loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials;
+            return (loadCount <= 0 && Time.realtimeSinceStartup - lastAd >= minSecondsBetweenInterstitials) || Time.realtimeSinceStartup - lastAd >= maxSecondsBetweenInterstitials;
         }
 
         bool IsInterstitialAdReady() {

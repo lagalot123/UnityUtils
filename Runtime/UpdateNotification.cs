@@ -64,7 +64,7 @@ namespace UnityUtils.Runtime {
                 yield return w.SendWebRequest();
 
                 if (w.error != null) {
-                    Debug.Log("Update Notification Error: " + w.error);
+                    Debug.Log("Update Notification, Link: " + link + ",  Error: " + w.error);
                 } else {
                     try {
                         XmlDocument xmlDoc = new();

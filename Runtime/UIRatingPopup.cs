@@ -26,7 +26,6 @@ namespace UnityUtils.Runtime {
 
 
         private void Start() {
-            txtTitle.text = "Enjoying " + Application.productName + "?";
             go.SetActive(false);
         }
 
@@ -35,6 +34,7 @@ namespace UnityUtils.Runtime {
                 go.SetActive(false);
                 return;
             }
+            txtTitle.text = "Enjoying " + Application.productName + "?";
             go.SetActive(!go.activeSelf);
         }
 
