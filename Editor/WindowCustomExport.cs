@@ -35,6 +35,18 @@ namespace UnityUtils.Editor {
         //string productName = "Demolition Derby 2";
         //string applicationIdentifier = "com.BeerMoneyGames.Demolition2";
 
+        string CodeToVersionString(int code) {
+            string tmp = code.ToString();
+
+            string s = "";
+
+            s = tmp.Length > 4 ? tmp.Substring(0, tmp.Length - 4) + "." : "0.";
+            s += tmp.Length > 3 ? tmp.Substring(2, 1) + "." : "0.";
+            s += tmp.Length > 3 ? tmp.Substring(tmp.Length - 3) + "" : "000";
+
+            return s;
+        }
+
         void OnGUI() {
 
             if (centerLabelStyle == null) {
@@ -58,8 +70,20 @@ namespace UnityUtils.Editor {
 
             GUILayout.Space(20);
 
-            PlayerSettings.bundleVersion = EditorGUILayout.TextField("Bundle Version", PlayerSettings.bundleVersion);
+            int oldCode = PlayerSettings.Android.bundleVersionCode;
+
+            EditorGUILayout.BeginHorizontal();
             PlayerSettings.Android.bundleVersionCode = EditorGUILayout.IntField("Bundle Version Code", PlayerSettings.Android.bundleVersionCode);
+
+            ProjectPrefs.SetBool("UnityUtils.CustomExport.AutoCopyVersionCodeToVersionString", EditorGUILayout.Toggle("Copy to Utils/Version String", ProjectPrefs.GetBool("UnityUtils.CustomExport.AutoCopyVersionCodeToVersionString")));
+
+            EditorGUILayout.EndHorizontal();
+
+            if (oldCode != PlayerSettings.Android.bundleVersionCode) {
+                PlayerSettings.bundleVersion = CodeToVersionString(PlayerSettings.Android.bundleVersionCode);
+            }
+
+            PlayerSettings.bundleVersion = EditorGUILayout.TextField("Bundle Version", PlayerSettings.bundleVersion);
             PlayerSettings.macOS.buildNumber = PlayerSettings.iOS.buildNumber = PlayerSettings.bundleVersion;
             //Debug.Log(PlayerSettings.iOS);
 
@@ -74,6 +98,10 @@ namespace UnityUtils.Editor {
                 g.GetComponent<Utility>().versionCode = EditorGUILayout.IntField("Utility BVC", g.GetComponent<Utility>().versionCode);
 
                 if (GUILayout.Button("Copy from BVC")) {
+                    g.GetComponent<Utility>().versionCode = PlayerSettings.Android.bundleVersionCode;
+                }
+
+                if (oldCode != PlayerSettings.Android.bundleVersionCode) {
                     g.GetComponent<Utility>().versionCode = PlayerSettings.Android.bundleVersionCode;
                 }
 
