@@ -41,8 +41,13 @@ namespace UnityUtils.Editor {
             string s = "";
 
             s = tmp.Length > 4 ? tmp.Substring(0, tmp.Length - 4) + "." : "0.";
-            s += tmp.Length > 3 ? tmp.Substring(2, 1) + "." : "0.";
-            s += tmp.Length > 3 ? tmp.Substring(tmp.Length - 3) + "" : "000";
+            s += tmp.Length > 3 ? tmp.Substring(tmp.Length - 4, 1) + "." : "0.";
+            if (tmp.Length == 2)
+                s += "0";
+            if (tmp.Length == 1)
+                s += "00";
+
+            s += tmp.Length >= 1 ? tmp.Substring(Mathf.Clamp(tmp.Length - 3, 0, tmp.Length - 3)) + "" : "0";
 
             return s;
         }
