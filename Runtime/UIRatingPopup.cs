@@ -14,12 +14,14 @@ namespace UnityUtils.Runtime {
         public bool onlyShowOnce = false;
 
         public void TriggerCheck() {
+#if !UNITY_WEBGL
             triggers++;
 
             if (triggers >= minTriggers) {
                 Toggle();
                 triggers = 0;
             }
+#endif
         }
 
         const string playerPrefKey = "UnityUtils.RatingPopup.Seen";
