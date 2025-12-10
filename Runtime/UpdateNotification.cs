@@ -45,6 +45,8 @@ namespace UnityUtils.Runtime {
         IEnumerator LoadUpdateInfo() {
             updateNotes = new();
 
+#if !UNITY_WEBGL
+
             string link = linkAndroidGooglePlayXML;
 #if UNITY_ANDROID
             if (Utility.I.store == AndroidStore.Amazon) {
@@ -86,7 +88,7 @@ namespace UnityUtils.Runtime {
                     ReloadUI(updateNotes);
                 }
             }
-
+#endif
         }
 
 
