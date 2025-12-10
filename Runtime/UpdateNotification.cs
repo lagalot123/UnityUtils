@@ -45,7 +45,11 @@ namespace UnityUtils.Runtime {
         IEnumerator LoadUpdateInfo() {
             updateNotes = new();
 
-#if !UNITY_WEBGL
+#if UNITY_WEBGL
+
+            yield return null;
+
+#else
 
             string link = linkAndroidGooglePlayXML;
 #if UNITY_ANDROID
