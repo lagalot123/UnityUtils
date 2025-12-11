@@ -16,6 +16,8 @@ using Fusion.Photon.Realtime;
 namespace UnityUtils.Editor {
     public class WindowCustomExport : EditorWindow {
 
+#if UNITY_ANDROID
+
         [MenuItem("Export/Export Window")]
         public static void ShowWindow() {
             EditorWindow.GetWindow(typeof(WindowCustomExport));
@@ -610,5 +612,7 @@ namespace UnityUtils.Editor {
 
             throw new Exception("Can't get bundle code for architecture " + targetArchitectures);
         }
+
+#endif
     }
 }
