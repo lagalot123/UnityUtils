@@ -296,6 +296,65 @@ namespace UnityUtils.Editor {
             }
 #endif
 
+#if UNITY_WEBGL
+            GUILayout.Space(20);
+            GUILayout.Label("WebGl Build");
+
+
+
+
+            GUILayout.BeginHorizontal();
+            PlayerSettings.WebGL.dataCaching = GUILayout.Toggle(PlayerSettings.WebGL.dataCaching, "Data Caching");
+            PlayerSettings.WebGL.wasm2023 = GUILayout.Toggle(PlayerSettings.WebGL.wasm2023, "wasm 2023");
+            PlayerSettings.WebGL.exceptionSupport = (WebGLExceptionSupport)EditorGUILayout.EnumPopup("Exceptions: ", PlayerSettings.WebGL.exceptionSupport);
+            GUILayout.EndHorizontal();
+            GUILayout.Space(20);
+
+            GUILayout.BeginHorizontal();
+            PlayerSettings.WebGL.debugSymbolMode = (WebGLDebugSymbolMode)EditorGUILayout.EnumPopup("Debug Symbols: ", PlayerSettings.WebGL.debugSymbolMode);
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(20);
+
+            PlayerSettings.WebGL.compressionFormat = (WebGLCompressionFormat)EditorGUILayout.EnumPopup("Compression: ", PlayerSettings.WebGL.compressionFormat);
+            UnityEditor.WebGL.UserBuildSettings.codeOptimization = (UnityEditor.WebGL.WasmCodeOptimization)EditorGUILayout.EnumPopup("Code Gen: ", UnityEditor.WebGL.UserBuildSettings.codeOptimization);
+
+
+            GUILayout.Space(20);
+            GUILayout.BeginHorizontal();
+
+
+            Path = EditorGUILayout.TextField("Location", Path);
+
+            if (GUILayout.Button("...", GUILayout.Width(50))) {
+                Path = EditorUtility.OpenFolderPanel("Select Directory", "", "");
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            Folder = EditorGUILayout.TextField("Folder Name", Folder);
+
+            
+            
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+
+
+            if (GUILayout.Button("Export WebGL Build")) {
+                if (PreBuildSetup()) {
+                    Build();
+                }
+            }            
+
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(20);
+
+            if (GUILayout.Button("Open Export Folder")) {
+                EditorUtility.RevealInFinder(Path);
+            }
+#endif
+
 
             GUILayout.EndVertical();
 
@@ -304,11 +363,14 @@ namespace UnityUtils.Editor {
         static string _path;
         static string _folder;
 
+        static string PathKey => "UnityUtils.Editor.WindowCustomExport.Path" + EditorUserBuildSettings.activeBuildTarget;
+        static string FolderKey => "UnityUtils.Editor.WindowCustomExport.Folder" + EditorUserBuildSettings.activeBuildTarget;
+
 
         static string Path {
             get {
                 if (string.IsNullOrEmpty(_path)) {
-                    _path = ProjectPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Path", "");
+                    _path = ProjectPrefs.GetString(PathKey, "");
                 }
                 if (string.IsNullOrEmpty(_path)) {
                     _path = Application.dataPath;
@@ -317,14 +379,14 @@ namespace UnityUtils.Editor {
             }
             set {
                 _path = value;
-                ProjectPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Path", _path);
+                ProjectPrefs.SetString(PathKey, _path);
             }
         }
 
         static string Folder {
             get {
                 if (string.IsNullOrEmpty(_folder)) {
-                    _folder = ProjectPrefs.GetString("UnityUtils.Editor.WindowCustomExport.Folder", "");
+                    _folder = ProjectPrefs.GetString(FolderKey, "");
                 }
                 if (string.IsNullOrEmpty(_folder)) {
                     _folder = "XC_" + PlayerSettings.productName;
@@ -333,7 +395,7 @@ namespace UnityUtils.Editor {
             }
             set {
                 _folder = value;
-                ProjectPrefs.SetString("UnityUtils.Editor.WindowCustomExport.Folder", _folder);
+                ProjectPrefs.SetString(FolderKey, _folder);
             }
         }
 
@@ -349,19 +411,11 @@ namespace UnityUtils.Editor {
         }
 
 
-#if UNITY_6000_0_OR_NEWER
         public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
         public static event PreBuildEvent PreBuild;
 
         public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
         public static event PostBuildEvent PostBuild;
-#else
-        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
-        public static event PreBuildEvent PreBuild;
-
-        public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
-        public static event PostBuildEvent PostBuild;
-#endif
 
 
         public enum BuildType {
@@ -370,14 +424,16 @@ namespace UnityUtils.Editor {
             Debug = 2
         }
 
+#if UNITY_IOS
         public void Build(BuildType buildType = BuildType.Release) {
+            PreBuild?.Invoke(AndroidArchitecture.None, false, AndroidStore.Other, buildType);
+
             Debug.Log("Starting build");
             SetDebugBuildStatus(buildType);
 
             string filename = Path;
 
             string filenameNoExtension = filename;
-            //filename += (aabExport ? ".aab" : ".apk");
 
 
             string[] levels = new string[UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings];
@@ -405,8 +461,52 @@ namespace UnityUtils.Editor {
             }
 
             SetDebugBuildStatus(buildType);
-        }
 
+            PostBuild?.Invoke(AndroidArchitecture.None, false, AndroidStore.Other, buildType);
+        }
+#endif
+
+#if UNITY_WEBGL
+        public void Build(BuildType buildType = BuildType.Release) {
+            PreBuild?.Invoke(AndroidArchitecture.None, false, AndroidStore.Other, buildType);
+
+            Debug.Log("Starting build");
+            SetDebugBuildStatus(buildType);
+
+            string filename = Path;
+
+            string filenameNoExtension = filename;
+
+
+            string[] levels = new string[UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings];
+            for (int i = 0; i < levels.Length; i++) {
+                levels[i] = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
+            }
+
+            BuildPlayerOptions bo = new BuildPlayerOptions {
+                scenes = levels,
+                locationPathName = Path + "/" + Folder,
+                target = BuildTarget.WebGL,
+                options = GetBuildOptions(buildType),
+            };
+
+            BuildPipeline.BuildPlayer(bo);
+            Debug.Log("Exported WebGL Build");
+
+
+            //string burstDebugInformationDirectoryPath = Application.dataPath.Substring(0, Application.dataPath.Length - 7) + "/" + filenameNoExtension + "_BurstDebugInformation_DoNotShip";
+            string burstDebugInformationDirectoryPath = Path + "/" + Folder + "_BurstDebugInformation_DoNotShip";
+            if (Directory.Exists(burstDebugInformationDirectoryPath)) {
+                Debug.Log($" > Deleting Burst debug information folder at path '{burstDebugInformationDirectoryPath}'...");
+
+                Directory.Delete(burstDebugInformationDirectoryPath, true);
+            }
+
+            SetDebugBuildStatus(buildType);
+
+            PostBuild?.Invoke(AndroidArchitecture.None, false, AndroidStore.Other, buildType);
+        }
+#endif
 
         static BuildOptions GetBuildOptions(BuildType type) {
             BuildOptions tmp = BuildOptions.None | ((type != BuildType.Release) ? BuildOptions.CompressWithLz4 : BuildOptions.CompressWithLz4HC);
@@ -427,7 +527,7 @@ namespace UnityUtils.Editor {
             return tmp;
         }
 
-
+#if UNITY_ANDROID
         public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType = BuildType.Release) {
             Debug.Log("Starting build");
 
@@ -450,11 +550,7 @@ namespace UnityUtils.Editor {
             int originalBundleCode = PlayerSettings.Android.bundleVersionCode;
 
 
-#if UNITY_6000_0_OR_NEWER
             PreBuild?.Invoke(arch, aabExport, androidStore, buildType);
-#else
-            PreBuild?.Invoke(arch, aabExport, androidStore, buildType);
-#endif
 
 
             //#if UNITY_IOS
@@ -549,14 +645,10 @@ namespace UnityUtils.Editor {
             SetDebugBuildStatus(BuildType.Release);
 
 
-#if UNITY_6000_0_OR_NEWER
             PostBuild?.Invoke(arch, aabExport, androidStore, buildType);
-#else
-            PostBuild?.Invoke(arch, aabExport, androidStore, buildType);
-#endif
         }
 
-
+#endif
 
         static void SetDebugBuildStatus(BuildType type) {
             bool debug = type != BuildType.Release;
