@@ -16,7 +16,7 @@ using Fusion.Photon.Realtime;
 namespace UnityUtils.Editor {
     public class WindowCustomExport : EditorWindow {
 
-#if UNITY_ANDROID
+//#if UNITY_ANDROID
 
         [MenuItem("Export/Export Window")]
         public static void ShowWindow() {
@@ -350,16 +350,16 @@ namespace UnityUtils.Editor {
 
 
 #if UNITY_6000_0_OR_NEWER
-        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, Unity.Android.Types.DebugSymbolLevel createSymbolsZip);
+        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
         public static event PreBuildEvent PreBuild;
 
-        public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, Unity.Android.Types.DebugSymbolLevel createSymbolsZip);
+        public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
         public static event PostBuildEvent PostBuild;
 #else
-        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, AndroidCreateSymbols createSymbolsZip);
+        public delegate void PreBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
         public static event PreBuildEvent PreBuild;
 
-        public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType, AndroidCreateSymbols createSymbolsZip);
+        public delegate void PostBuildEvent(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType);
         public static event PostBuildEvent PostBuild;
 #endif
 
@@ -451,9 +451,9 @@ namespace UnityUtils.Editor {
 
 
 #if UNITY_6000_0_OR_NEWER
-            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, UnityEditor.Android.UserBuildSettings.DebugSymbols.level);
+            PreBuild?.Invoke(arch, aabExport, androidStore, buildType);
 #else
-            PreBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+            PreBuild?.Invoke(arch, aabExport, androidStore, buildType);
 #endif
 
 
@@ -550,9 +550,9 @@ namespace UnityUtils.Editor {
 
 
 #if UNITY_6000_0_OR_NEWER
-            PostBuild?.Invoke(arch, aabExport, androidStore, buildType, UnityEditor.Android.UserBuildSettings.DebugSymbols.level);
+            PostBuild?.Invoke(arch, aabExport, androidStore, buildType);
 #else
-            PostBuild?.Invoke(arch, aabExport, androidStore, buildType, EditorUserBuildSettings.androidCreateSymbols);
+            PostBuild?.Invoke(arch, aabExport, androidStore, buildType);
 #endif
         }
 
@@ -613,6 +613,6 @@ namespace UnityUtils.Editor {
             throw new Exception("Can't get bundle code for architecture " + targetArchitectures);
         }
 
-#endif
+//#endif
     }
 }
