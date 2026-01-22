@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -62,11 +63,11 @@ namespace UnityUtils.Runtime {
             LoadLevel(SceneManager.GetActiveScene().name);
         }
 
-        virtual public void LoadLevel(string scene) {
-            StartCoroutine(SceneLoad(scene));
+        virtual public async void LoadLevel(string scene) {
+            await SceneLoad(scene);
         }
 
-        virtual public IEnumerator SceneLoad(string scene) {
+        virtual public async Task SceneLoad(string scene) {
             Time.timeScale = 1;
             loadingScreen.Toggle(true);
 
@@ -79,10 +80,13 @@ namespace UnityUtils.Runtime {
             while (!operation.isDone) {
                 loadingScreen.SetProgress(operation.progress);
 
-                if (operation.progress >= 0.9f)
+                if (operation.progress >= 0.9f) {
+                    await Awaitable.NextFrameAsync();
+                    await Awaitable.NextFrameAsync();
                     operation.allowSceneActivation = true;
+                }
 
-                yield return null;
+                await Awaitable.NextFrameAsync();
             }
         }
 
@@ -101,18 +105,18 @@ namespace UnityUtils.Runtime {
                 Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
             if (scene.buildIndex != 0)
-                StartCoroutine(WaitForAwakeStart());
+                WaitForAwakeStart();
 
             if (onLevelLoaded != null)
                 onLevelLoaded.Invoke();
         }
 
-        virtual public IEnumerator WaitForAwakeStart() {
-            yield return new WaitForSeconds(0.8f);
+        virtual public async void WaitForAwakeStart() {
+            await Awaitable.WaitForSecondsAsync(0.8f);
 
             loadingScreen.SetProgress(1);
 
-            yield return new WaitForSeconds(0.2f);
+            await Awaitable.WaitForSecondsAsync(0.2f);
 
             loadingScreen.Toggle(false);
 
