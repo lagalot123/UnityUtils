@@ -111,7 +111,7 @@ namespace UnityUtils.Runtime {
                 onLevelLoaded.Invoke();
         }
 
-        virtual public async void WaitForAwakeStart() {
+        virtual public async Task WaitForAwakeStart() {
             await Awaitable.WaitForSecondsAsync(0.8f);
 
             loadingScreen.SetProgress(1);
