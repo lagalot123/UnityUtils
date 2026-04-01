@@ -1,3 +1,6 @@
+#if UNITY_6000_3_OR_NEWER
+
+#else
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -167,3 +170,4 @@ namespace UnityToolbarExtender
 		}
 	}
 }
+#endif

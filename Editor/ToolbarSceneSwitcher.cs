@@ -1,3 +1,94 @@
+#if UNITY_6000_3_OR_NEWER
+
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEditor.Toolbars;
+using UnityEngine;
+using UnityUtils.Editor;
+
+public class MainToolbarDropdownExample {
+    const string kElementPath = "Examples/Example Dropdown";
+
+    static string selectedItem = "Item 1";
+
+    static string[] scenePaths;
+    static GUIContent[] buttonLabels;
+
+    static void GetScenes() {
+        bool filterByBuildScenes = ProjectPrefs.GetBool("UnityUtils.SceneSwitcher.FilterByBuild", false);
+        //filterByBuildScenes = true;
+        string[] scenePathsAll = AssetDatabase.FindAssets("t:Scene", new string[] { "Assets/" }).Select(AssetDatabase.GUIDToAssetPath).ToArray();
+
+        List<int> tmp = new();
+
+        for (int i = 0; i < scenePathsAll.Length; i++) {
+            if (filterByBuildScenes) {
+                for (int j = 0; j < EditorBuildSettings.scenes.Length; j++) {
+                    if (scenePathsAll[i] == EditorBuildSettings.scenes[j].path) {
+                        tmp.Add(i);
+                        break;
+                    }
+                }
+            } else {
+                tmp.Add(i);
+            }
+
+        }
+
+        scenePaths = new string[tmp.Count];
+        buttonLabels = new GUIContent[tmp.Count];
+
+        for (int i = 0; i < scenePaths.Length; i++) {
+            scenePaths[i] = scenePathsAll[tmp[i]];
+            buttonLabels[i] = new GUIContent(scenePathsAll[tmp[i]][7..^6].Replace('/', '_'));
+        }
+
+    }
+
+    public static int index = 0;
+
+
+    [MainToolbarElement(kElementPath, defaultDockPosition = MainToolbarDockPosition.Middle)]
+    public static MainToolbarElement CreateExampleDropdown() {
+        GetScenes();
+
+        index = -1;
+
+        for (int i = 0; i < scenePaths.Length; i++) {
+            if (EditorSceneManager.GetActiveScene().path == scenePaths[i]) {
+                index = i;
+                break;
+            }
+        }
+
+        var content = new MainToolbarContent(buttonLabels[index].text);
+        return new MainToolbarDropdown(content, ShowDropdownMenu);
+    }
+
+    static void ShowDropdownMenu(Rect dropDownRect) {
+        var menu = new GenericMenu();
+
+        for (int i = 0; i < buttonLabels.Length; i++) {
+            menu.AddItem(new GUIContent(buttonLabels[i]), false, (object obj) => {
+                index = (int)obj;
+                if (EditorSceneManager.GetActiveScene().path != scenePaths[index]) {
+                    if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) {
+                        EditorSceneManager.OpenScene(scenePaths[index]);
+                    }
+                }
+                MainToolbar.Refresh(kElementPath);
+            }, i);
+        }
+        menu.DropDown(dropDownRect);
+    }
+}
+
+
+
+
+#else
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -122,3 +213,4 @@ namespace UnityUtils.Editor
         }
     }
 }
+#endif
