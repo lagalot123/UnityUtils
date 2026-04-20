@@ -125,7 +125,7 @@ namespace UnityUtils.Editor {
 
 
 
-#if FUSION_WEAVER
+#if FUSION_WEAVER && FUSION_2_0
             GUILayout.BeginHorizontal();
             PhotonAppSettings s = AssetDatabase.LoadAssetAtPath<PhotonAppSettings>(
                 (AssetDatabase.GetAssetPath(
