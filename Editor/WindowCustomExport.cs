@@ -424,8 +424,14 @@ namespace UnityUtils.Editor {
             Debug = 2
         }
 
+        static float timeLastBuildAttempt = 0;
+
+
 #if UNITY_IOS
         public void Build(BuildType buildType = BuildType.Release) {
+            if(timeLastBuildAttempt > EditorApplication.timeSinceStartup - 1)
+                return;
+
             PreBuild?.Invoke(AndroidArchitecture.None, false, AndroidStore.Other, buildType);
 
             Debug.Log("Starting build");
@@ -468,6 +474,9 @@ namespace UnityUtils.Editor {
 
 #if UNITY_WEBGL
         public void Build(BuildType buildType = BuildType.Release) {
+            if(timeLastBuildAttempt > EditorApplication.timeSinceStartup - 1)
+                return;
+
             PreBuild?.Invoke(AndroidArchitecture.None, false, AndroidStore.Other, buildType);
 
             Debug.Log("Starting build");
@@ -529,6 +538,9 @@ namespace UnityUtils.Editor {
 
 #if UNITY_ANDROID
         public static void Build(AndroidArchitecture arch, bool aabExport, AndroidStore androidStore, BuildType buildType = BuildType.Release) {
+            if (timeLastBuildAttempt > EditorApplication.timeSinceStartup - 1)
+                return;
+
             Debug.Log("Starting build");
 
             SetDebugBuildStatus(buildType);
