@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace UnityUtils.Runtime {
     public class UITabs : MonoBehaviour {
@@ -9,6 +10,8 @@ namespace UnityUtils.Runtime {
 
         public GameObject[] tabs;
         public GameObject[] tabSelectorOutlines;
+
+        public UnityEvent onTabChanged;
 
         virtual public void Start() {
             for (int i = 0; i < tabs.Length; i++) {
@@ -31,6 +34,8 @@ namespace UnityUtils.Runtime {
                 currentTab = t;
                 tabs[currentTab].SetActive(true);
             }
+
+            onTabChanged?.Invoke();
         }
 
         public void SetTab(int t) {
@@ -42,10 +47,12 @@ namespace UnityUtils.Runtime {
             tabs[currentTab].SetActive(false);
             currentTab = t;
             tabs[currentTab].SetActive(true);
+
+            onTabChanged?.Invoke();
         }
 
         public void CycleTab(int i) {
-            SetTab(UnityUtils.Runtime.Misc.IndexLoop(currentTab, i, tabs.Length - 1));
+            SetTab(Misc.IndexLoop(currentTab, i, tabs.Length - 1));
         }
 
 
