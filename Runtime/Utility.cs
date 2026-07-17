@@ -14,7 +14,12 @@ namespace UnityUtils.Runtime {
         Other
     }
 
-    public class Utility : MonoBehaviour {
+    public partial class Utility : MonoBehaviour {
+
+
+#if UNITY_6000_5_OR_NEWER
+        [Unity.Scripting.LifecycleManagement.AutoStaticsCleanup]
+#endif
         private static Utility _I;
         public static Utility I {
             get {
