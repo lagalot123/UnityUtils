@@ -98,8 +98,11 @@ namespace UnityUtils.Editor {
             GUILayout.BeginHorizontal();
 
             if (Resources.Load(resourcesUtilsPrefabPath) != null) {
+#if UNITY_6000_5_OR_NEWER
+                GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetEntityId())));
+#else
                 GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetInstanceID())));
-
+#endif
                 int uCurrentBVC = g.GetComponent<Utility>().versionCode;
 
                 g.GetComponent<Utility>().versionCode = EditorGUILayout.IntField("Utility BVC", g.GetComponent<Utility>().versionCode);
@@ -127,11 +130,21 @@ namespace UnityUtils.Editor {
 
 #if FUSION_WEAVER && FUSION_2_0
             GUILayout.BeginHorizontal();
+                
+#if UNITY_6000_5_OR_NEWER
+            PhotonAppSettings s = AssetDatabase.LoadAssetAtPath<PhotonAppSettings>(
+                (AssetDatabase.GetAssetPath(
+                    ((PhotonAppSettings)Resources.Load("PhotonAppSettings", typeof(PhotonAppSettings))
+                    ).GetEntityId()))
+                );
+#else
             PhotonAppSettings s = AssetDatabase.LoadAssetAtPath<PhotonAppSettings>(
                 (AssetDatabase.GetAssetPath(
                     ((PhotonAppSettings)Resources.Load("PhotonAppSettings", typeof(PhotonAppSettings))
                     ).GetInstanceID()))
                 );
+#endif
+
             //s.AppSettings.AppVersion = PlayerSettings.Android.bundleVersionCode + "";
             string sCurrentBVC = s.AppSettings.AppVersion;
 
@@ -537,8 +550,13 @@ namespace UnityUtils.Editor {
 
             SetDebugBuildStatus(buildType);
 
-            if (Resources.Load(resourcesUtilsPrefabPath) != null) {
+            if (Resources.Load(resourcesUtilsPrefabPath) != null) {                
+#if UNITY_6000_5_OR_NEWER
+                GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetEntityId())));
+#else
                 GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetInstanceID())));
+#endif
+
                 if (g.GetComponent<Utility>().store != androidStore) {
                     Debug.Log("Changing Store to " + androidStore);
 
@@ -658,8 +676,12 @@ namespace UnityUtils.Editor {
             bool debug = type != BuildType.Release;
 
             if (Resources.Load(resourcesUtilsPrefabPath) != null) {
-                GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetInstanceID())));
 
+#if UNITY_6000_5_OR_NEWER
+                GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetEntityId())));
+#else
+                GameObject g = AssetDatabase.LoadAssetAtPath<GameObject>((AssetDatabase.GetAssetPath((Resources.Load(resourcesUtilsPrefabPath) as GameObject).GetInstanceID())));
+#endif
 
                 if (g.GetComponent<Utility>().testBuild != debug) {
                     g.GetComponent<Utility>().testBuild = debug;
