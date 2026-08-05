@@ -13,7 +13,7 @@ namespace UnityUtils.Runtime {
         private int triggers = 0;
         public bool onlyShowOnce = false;
 
-        public void TriggerCheck() {
+        virtual public void TriggerCheck() {
 #if !UNITY_WEBGL
             triggers++;
 
@@ -27,11 +27,11 @@ namespace UnityUtils.Runtime {
         const string playerPrefKey = "UnityUtils.RatingPopup.Seen";
 
 
-        private void Start() {
+        virtual public void Start() {
             go.SetActive(false);
         }
 
-        public void Toggle() {
+        virtual public void Toggle() {
             if (PlayerPrefs.GetInt(playerPrefKey, 0) != 0) {
                 go.SetActive(false);
                 return;
@@ -40,14 +40,14 @@ namespace UnityUtils.Runtime {
             go.SetActive(!go.activeSelf);
         }
 
-        public void NoThanks() { 
+        virtual public void NoThanks() { 
             if(onlyShowOnce)
                 PlayerPrefs.SetInt(playerPrefKey, 1);
 
             Toggle();
         }
 
-        public void Rate() {
+        virtual public void Rate() {
             Utility.OpenStorePage();
 
             PlayerPrefs.SetInt(playerPrefKey, 1);
