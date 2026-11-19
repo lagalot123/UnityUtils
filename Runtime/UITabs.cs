@@ -39,14 +39,14 @@ namespace UnityUtils.Runtime {
         }
 
         public void SetTab(int t) {
-            if (tabSelectorOutlines != null && tabSelectorOutlines.Length > 0) {
-                tabSelectorOutlines[currentTab].SetActive(false);
-                tabSelectorOutlines[t].SetActive(true);
-            }
+            for (int i = 0; i < tabs.Length; i++) {
+                if (tabs[i].activeSelf != (i == t))
+                    tabs[i].SetActive(i == t);
 
-            tabs[currentTab].SetActive(false);
-            currentTab = t;
-            tabs[currentTab].SetActive(true);
+                if (tabSelectorOutlines != null && tabSelectorOutlines.Length > 0) {
+                    tabSelectorOutlines[i].SetActive(i == currentTab);
+                }
+            }
 
             onTabChanged?.Invoke();
         }
