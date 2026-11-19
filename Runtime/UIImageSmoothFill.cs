@@ -13,12 +13,12 @@ namespace UnityUtils.Runtime {
 
         private Coroutine blinkRoutine;
 
-        private void Start() {
+        private void Awake() {
             colOriginal = img.color;
         }
 
         void Update() {
-            if (target != img.fillAmount) { 
+            if (target != img.fillAmount) {
                 img.fillAmount = Mathf.MoveTowards(img.fillAmount, target, Time.deltaTime * speed);
             }
         }
@@ -28,14 +28,17 @@ namespace UnityUtils.Runtime {
         }
 
         public void SetTarget(float t, Color blinkColor) {
-            SetTarget(target);
+            SetTarget(t);
+
+            if (target == img.fillAmount)
+                return;
 
             colBlink = blinkColor;
 
             if (blinkRoutine != null)
                 StopCoroutine(blinkRoutine);
 
-            blinkRoutine = StartCoroutine(BlinkRoutine(colBlink, 0.5f));        
+            blinkRoutine = StartCoroutine(BlinkRoutine(colBlink, 0.5f));
         }
 
         public float GetTarget() {
