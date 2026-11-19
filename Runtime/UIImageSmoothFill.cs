@@ -10,7 +10,6 @@ namespace UnityUtils.Runtime {
         public Image img;
         private Color colBlink;
         private Color colOriginal;
-        private float t;
 
         private Coroutine blinkRoutine;
 
@@ -22,9 +21,6 @@ namespace UnityUtils.Runtime {
             if (target != img.fillAmount) { 
                 img.fillAmount = Mathf.MoveTowards(img.fillAmount, target, Time.deltaTime * speed);
             }
-
-            if(t < 1)
-            img.color = Color.Lerp(colOriginal, colBlink, t);
         }
 
         public void SetTarget(float t) {
